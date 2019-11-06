@@ -72,7 +72,7 @@
   },
   "scripts": {
     "start": "npm-run-all --parallel start:**",
-    "start:client": "node ./scripts/start.js",
+    "start:client": "node ./scripts/start.js&&nodemon --watch ./src",
     "start:server": "node ./build/main.js",
     "build": "babel src -d build",
     "test": "node scripts/test.js"
