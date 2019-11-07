@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./App.css";
-import {Switch, Route} from "react-router-dom";
+import {Switch, Route, BrowserRouter } from "react-router-dom";
 import {
     borad,
     login,
@@ -9,9 +9,11 @@ import {
     write,
     notFound
 } from "./page/index.async.js";
-
+import configure from "./store/configure";
 function App() {
+  const store = configure();
   return (
+    <Provider store = {store}>
     <div className={styles.App}>
       <header id={styles.banner}>
       </header>
@@ -43,6 +45,7 @@ function App() {
         </div>
         
         <section className={styles.contents}>
+        <BrowserRouter>
         <Switch>
             <Route exact path="/" component={borad}/>
             <Route exact path="/:name" component={borad}/>
@@ -52,10 +55,12 @@ function App() {
             <Route exact path="/update" component={update}/>
             <Route component={notFound}/>
         </Switch>
+        </BrowserRouter>
         </section>
       </section>
 
     </div>
+    </Provider>
   );
 }
 
