@@ -1,5 +1,14 @@
 import React from "react";
 import styles from "./App.css";
+import {Switch, Route} from "react-router-dom";
+import {
+    borad,
+    login,
+    post,
+    update,
+    write,
+    notFound
+} from "./page/index.async.js";
 
 function App() {
   return (
@@ -34,46 +43,15 @@ function App() {
         </div>
         
         <section className={styles.contents}>
-          <div className={styles.contents_inner}>
-            
-            <div className={styles.title}>
-              <h2>title</h2>
-            </div>
-            <div className={styles.post}>
-              <h3>post title</h3>
-              <div className={styles.content}>
-                <p>content</p>
-              </div>
-            </div>
-            <div className={styles.post}>
-              <h3>post title</h3>
-              <div className={styles.content}>
-                <p>content</p>
-              </div>
-            </div>
-            <div className={styles.post}>
-              <h3>post title</h3>
-              <div className={styles.content}>
-                <p>content</p>
-              </div>
-            </div>
-            <div className={styles.post}>
-              <h3>post title</h3>
-              <div className={styles.content}>
-                <p>content</p>
-              </div>
-            </div>
-            <div className={styles.post}>
-              <h3>post title</h3>
-              <div className={styles.content}>
-                <p>content</p>
-              </div>
-            </div>
-          </div>
-          <div className={styles.slide}>
-            <span className={"fas fa-chevron-left "+styles.left}></span>
-            <span className={"fas fa-chevron-right "+styles.right}></span>
-          </div>
+        <Switch>
+            <Route exact path="/" component={borad}/>
+            <Route exact path="/:name" component={borad}/>
+            <Route exact path="/post/:num" component={post}/>
+            <Route exact path="/login" component={login}/>
+            <Route exact path="/write" component={write}/>
+            <Route exact path="/update" component={update}/>
+            <Route component={notFound}/>
+        </Switch>
         </section>
       </section>
 
