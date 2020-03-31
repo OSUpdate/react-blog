@@ -10,7 +10,7 @@ class App extends Component {
                 </header>
                 <div className={styles.titlebar}>
 
-                    <a href="#" className={styles.toggle + " fas"}></a>
+                    <a href="#" className={styles.toggle + " fas fa-bars"}></a>
                     <a href="#">blog</a>
                 </div>
                 <section className={styles.wrapper}>

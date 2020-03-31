@@ -104,6 +104,7 @@ nav, section, aside {
   top:0;
   left:0;
   z-index: 10000;
+  padding: 0 0.5em;
 }
 .titlebar a{
   color:white;
@@ -182,9 +183,8 @@ nav, section, aside {
   padding: 1.66667em 1.66667em 1.33333em 1.66667em;
 }
 .toggle{
-  color:white;
-  padding: 0 1em;
-  background-color: var(--main-button-color);
+  color:var(--main-button-color);
+  padding: 0 0.5em;
   margin-right: 10px;
   height: 44px;
   line-height: 44px;
@@ -241,12 +241,15 @@ article {
 }
 @media (min-width: 1280px){
   .toggle{
-    display: none;
+    display: none !important;
   }
   .sidebar{
     box-shadow: none;
   }
   .titlebar{
+    padding: 0 0.5em;
+  }
+  .titlebar > a{
     padding: 0 1em;
   }
   
