@@ -1,7 +1,12 @@
 import React, {Component} from "react";
+import { connect } from "react-redux";
+import {bindActionCreators} from "redux";
+
+import * as viewActions from "./modules/view";
 import styles from "./App.css";
 import PostContainer from "./containers/PostContainer";
-
+import ReadContainer from "./containers/ReadContainer";
+import { withRouter, Switch, Route } from "react-router-dom";
 class App extends Component {
     render() {
         return(
@@ -24,7 +29,7 @@ class App extends Component {
             
                             <nav className={styles.menu}>
                                 <header>
-                                    <h3>Menu</h3>
+                                    <h3>전체 글</h3>
                                 </header>
                                 <ul>
                                     <li><a href="#">Menu</a></li>
@@ -35,7 +40,11 @@ class App extends Component {
                             </nav>
                         </div>
                     </div>
-                    <PostContainer/>
+                    <Switch>
+                        <Route exact path="/" component={PostContainer}/>
+                        <Route exact path="/board/:name" component={PostContainer}/>
+                        <Route exact path="/board/:name/:num" component={ReadContainer}/>
+                    </Switch>
         
                 </section>
 
@@ -43,5 +52,16 @@ class App extends Component {
         );
     }
 }
+export default connect(
+    (state) => ({
+        //게시판 이름 정보
+        menu: state.view.get("menu"),
 
-export default App;
+        //현재 게시판의 페이지
+        toggle:state.view.get("menu")
+
+    }),
+    (dispatch) => ({
+        ViewActions: bindActionCreators(viewActions, dispatch)
+    })  
+)(withRouter(App));

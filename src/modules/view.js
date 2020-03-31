@@ -11,13 +11,17 @@ const SEARCH = "view/SEARCH";
 const NEXT_BOARD = "view/NEXT_BOARD";
 const PREV_BOARD = "view/PREV_BOARD";
 
+const MENU_TOGGLE = "view/MENU_TOGGLE";
+
 export const loading = createAction(LOADING);
 
 export const init = createAction(INIT, api.init);
 
-export const search = createAction(SEARCH,);
+export const search = createAction(SEARCH, api.search);
 export const nextBoard = createAction(NEXT_BOARD,);
 export const prevBoard = createAction(PREV_BOARD,);
+
+export const menuToggle = createAction(MENU_TOGGLE);
 
 const initialState = Map({
     //메뉴창 게시판 리스트
@@ -30,6 +34,8 @@ const initialState = Map({
     end:10
 });
 const reducer = handleActions({
+    [MENU_TOGGLE]: (state, action) => {
+    },
 },initialState);
 export default applyPenders(reducer,[
     {

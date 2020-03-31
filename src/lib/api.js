@@ -3,8 +3,8 @@ import axios from "axios";
 export const init = () => axios.get("/api/init");
 export const nextBoard = () => axios.get("/api/next");
 export const prevBoard = () => axios.get("/api/prev");
-
-
+export const search = () => axios.get("/api/search");
+export const checkLogin = () => axios.get("/api/account/getinfo");
 export const signin = (id,password) => axios.post("/api/account/signin",{
     request:{
         data:{
