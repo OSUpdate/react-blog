@@ -10,26 +10,28 @@ import PostList from "../component/PostList";
 
 class PostContainer extends Component {
     
-    handlePostClick = (e,num) => {
-        const {history} = this.props;
-        e.preventDefault();
-        history.push(`/post/${num}`);
+    handlePostClick = (title) => {
+        return (num) => {
+            const {history} = this.props;
+            history.push(`/board/${title}/${num}`);
+        };
     }
     render(){
-        const {title, posts, index} = this.props;
+        const { current, index } = this.props;
 
         const {handlePostClick} = this;
-
+        const data = current.toJS();
+        const onClick = handlePostClick(data.title);
         return(
             <section className={styles.contents}>
                 <div className={styles.contents_inner}>
             
                     <div className={styles.title}>
-                        <h2>{title}</h2>
+                        <h2>{data.title}</h2>
                     </div>
                     <PostList
-                        posts={posts}
-                        onClick={handlePostClick}
+                        current={data.list}
+                        onClick={onClick}
                         
                     />
                 </div>

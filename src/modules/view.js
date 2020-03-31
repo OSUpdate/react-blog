@@ -27,7 +27,84 @@ const initialState = Map({
     //메뉴창 게시판 리스트
     board:List(),
     //현재 게시판 정보
-    current:List(),
+    current:
+    Map({
+        title:"게시판",
+        list:List([
+            Map({
+                num:1,
+                time:"2020-03-31 15:00",
+                title:"게시글1",
+                content:"내용"
+            }),
+            Map({
+                num:2,
+                time:"2020-03-31 16:00",
+                title:"게시글2",
+                content:"내용"
+            }),
+            Map({
+                num:3,
+                time:"2020-03-31 17:00",
+                title:"게시글3",
+                content:"내용"
+            }),
+            Map({
+                num:4,
+                time:"2020-03-31 18:00",
+                title:"게시글4",
+                content:"내용"
+            }),
+            Map({
+                num:5,
+                time:"2020-03-31 18:10",
+                title:"게시글5",
+                content:"내용"
+            }),
+            Map({
+                num:6,
+                time:"2020-03-31 18:20",
+                title:"게시글6",
+                content:"내용"
+            }),
+            Map({
+                num:7,
+                time:"2020-03-31 18:30",
+                title:"게시글7",
+                content:"내용"
+            }),
+            Map({
+                num:8,
+                time:"2020-03-31 18:40",
+                title:"게시글8",
+                content:"내용"
+            }),
+            Map({
+                num:9,
+                time:"2020-03-31 18:50",
+                title:"게시글9",
+                content:"내용"
+            }),
+            Map({
+                num:10,
+                time:"2020-03-31 19:00",
+                title:"게시글10",
+                content:"내용"
+            }),
+            Map({
+                num:11,
+                time:"2020-03-31 19:10",
+                title:"게시글11",
+                content:"내용"
+            }),
+            Map({
+                num:12,
+                time:"2020-03-31 19:20",
+                title:"게시글12",
+                content:"내용"
+            }),
+        ])
+    }),
     //현재 게시판 페이징 처리 변수
     page:1,
     first:1,
