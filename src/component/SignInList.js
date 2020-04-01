@@ -3,7 +3,7 @@ import SignIn from "./SignIn";
 import {Link} from "react-router-dom";
 import { List, Map } from "immutable";
 /* input 컴포넌트 리스트 */
-const SignInList = ({signIn}) => {
+const SignInList = ({signIn, onChange}) => {
     const SignInList = signIn.map(
         (item, index) => {
             // 데이터 추출
@@ -16,6 +16,7 @@ const SignInList = ({signIn}) => {
                     type={type}
                     title={title}
                     value={value}
+                    onChange={onChange}
                 />
             );
         }
@@ -24,7 +25,7 @@ const SignInList = ({signIn}) => {
         <React.Fragment>
             {SignInList}
             <input type="submit" value="로그인"/>
-            <Link to="/find"><p>아이디‧비밀번호 찾기</p></Link>
+            <Link to="/find"><p>회원가입</p></Link>
         </React.Fragment>
     );
 

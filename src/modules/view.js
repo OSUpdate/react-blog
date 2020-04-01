@@ -91,18 +91,6 @@ const initialState = Map({
                 title:"게시글10",
                 content:"내용"
             }),
-            Map({
-                num:11,
-                time:"2020-03-31 19:10",
-                title:"게시글11",
-                content:"내용"
-            }),
-            Map({
-                num:12,
-                time:"2020-03-31 19:20",
-                title:"게시글12",
-                content:"내용"
-            }),
         ])
     }),
     //현재 게시판 페이징 처리 변수

@@ -7,6 +7,7 @@ import {withRouter} from "react-router-dom";
 import * as viewActions from "../modules/view";
 import styles from "../App.css";
 import PostList from "../component/PostList";
+import cx from "classnames";
 
 class PostContainer extends Component {
     
@@ -16,12 +17,23 @@ class PostContainer extends Component {
             history.push(`/board/${title}/${num}`);
         };
     }
+    pageNum = (first, end, page) => {
+        let temp = new Array();
+        for(let i = first; i<=end;i++){
+            temp.push(<a className={i==page?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</a>);
+        }
+        return temp;
+    }
     render(){
-        const { current, index } = this.props;
+        const { current, first, end, page } = this.props;
 
-        const {handlePostClick} = this;
+        const {
+            handlePostClick,
+            pageNum
+        } = this;
         const data = current.toJS();
         const onClick = handlePostClick(data.title);
+        const pages = pageNum(first,end, page);
         return(
             <section className={styles.contents}>
                 <div className={styles.contents_inner}>
@@ -34,10 +46,19 @@ class PostContainer extends Component {
                         onClick={onClick}
                         
                     />
+                    <nav className={styles.pg_wrap}>
+                        {pages}
+                    </nav>
                 </div>
                 <div className={styles.slide}>
-                    <span className={"fas fa-chevron-left "+styles.left}></span>
-                    <span className={"fas fa-chevron-right "+styles.right}></span>
+                    <div className={styles.slide_inner}>
+                        <div className={styles.left}>
+                            <span className={"fas fa-chevron-left "}></span>
+                        </div>
+                        <div className={styles.right}>
+                            <span className={"fas fa-chevron-right "}></span>
+                        </div>
+                    </div>
                 </div>
             </section>
         );

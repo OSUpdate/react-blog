@@ -8,6 +8,7 @@ import {
     Index,
     Login,
     Edit,
+    Register,
     NotFound
 } from "./page/index.async.js";
 const store = configure();
@@ -21,6 +22,7 @@ const Blog = () => {
                     <Route exact path="/board/:name" component={Index}/>
                     <Route exact path="/board/:name/:num" component={Index}/>
                     <Route exact path="/login" component={Login}/>
+                    <Route exact path="/register" component={Register}/>
                     <Route exact path="/edit/:token" component={Edit}/>
                     <Route component={NotFound}/>
                 </Switch>

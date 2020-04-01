@@ -1,6 +1,5 @@
 import React from "react";
 import ErrorInput from "./ErrorInput";
-import styles from "./style.css";
 import { List, Map } from "immutable";
 /* input 컴포넌트 리스트 */
 const SignUpList = ({signUp, onChange, onKeyUp, onClick}) => {
