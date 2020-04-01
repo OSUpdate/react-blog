@@ -21,9 +21,31 @@ class PostContainer extends Component {
         const {handlePostClick} = this;
 
         return(
-            <section className={styles.contents}>
-                
-            </section>
+            <div className={styles.App}>
+                <header>
+                </header>
+                <section className={styles.dash_wrap}>
+                    <div className={styles.dashbar}>
+                        <div className={styles.dash_inner}>
+            
+                            <nav className={styles.menu}>
+                                <header className={styles.dash_head}>
+                                    <h3>Dashboard</h3>
+                                </header>
+                                <ul className={styles.dash_menu}>
+                                    <li><a href="#">게시글 작성</a></li>
+                                    <li><a href="#">게시글 수정</a></li>
+                                    <li><a href="#">게시글 삭제</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+        
+                </section>
+                <section className={styles.dash_contents}>
+                    
+                </section>
+            </div>
         );
     }
 }

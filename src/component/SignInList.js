@@ -25,7 +25,7 @@ const SignInList = ({signIn, onChange}) => {
         <React.Fragment>
             {SignInList}
             <input type="submit" value="로그인"/>
-            <Link to="/find"><p>회원가입</p></Link>
+            <Link to="/register"><p>회원가입</p></Link>
         </React.Fragment>
     );
 

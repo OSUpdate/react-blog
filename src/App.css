@@ -3,6 +3,8 @@
   --main-button-focus-color:#51DBB6;
   --defaault-color: #fed136;
   --dark-color: #222222;
+  --gray-color:#8d9498;
+  --gray-focus-color:#212529;
   --info-background-color:#f2f4f7;
   --main-background-color:#fff;
 }
@@ -139,6 +141,27 @@ nav, section, aside {
 .contents_inner{
   padding: 3em 5em 1em 5em;
 }
+.dash_contents{
+  width: calc(100% - 280px);
+  min-height:100vh;
+  padding-left: 280px;
+}
+.dash_wrap{
+  margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  position: fixed;
+  flex-direction: row;
+
+}
+.dashbar{
+  background-color: #ffffff;
+  color:var(--gray-color-color);
+  width: 280px;
+  top:0;
+  bottom: 0;
+  position: fixed;
+}
 .sidebar{
   background-color: var(--main-background-color);
   width: 22em;
@@ -168,9 +191,7 @@ nav, section, aside {
   list-style: none;
 }
 .menu ul li{
-  border-top: 1px solid rgba(210, 215, 217, 0.75);
-  margin: 0.5em 0 0 0;
-  padding: 0.5em 0 0 0;
+  padding: 0.5em 0 0.5em 0;
 }
 .menu > ul > li > ul {
   margin: 0.5em 0 1.5em 0;
@@ -191,6 +212,23 @@ nav, section, aside {
   position: relative;
   padding: 0.66667em 1.66667em 1.33333em 1.66667em;
 }
+.dash_inner{
+  position: relative;
+  height: 100%;
+  padding:0.66667em 0 1.3333em 0;
+}
+.dash_menu > li > a, .dash_head{
+  padding-left: 24px;
+}
+.dash_menu > li{
+  color:var(--gray-color);
+}
+.dash_menu > li:hover{
+  color:var(--gray-focus-color) !important;
+  background-color: var(--info-background-color);
+  
+}
+
 .toggle{
   color:var(--main-button-color);
   padding: 0 0.5em;
@@ -477,11 +515,13 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
 .error {
   text-align: left;
   color:red !important;
+  
 }
 .red input[type="text"],
 .red input[type="email"],
 .red input[type="password"]{
   border: 1px solid red !important;
+  box-shadow: 0 0 1em 0 rgba(255, 0, 0, 0.175);
 }
 @media (min-width: 1280px){
   .toggle{
