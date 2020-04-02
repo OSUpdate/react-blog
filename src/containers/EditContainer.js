@@ -4,22 +4,28 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter} from "react-router-dom";
 
-import * as viewActions from "../modules/view";
+import * as developActions from "../modules/development";
 import styles from "../App.css";
-import PostList from "../component/PostList";
-
-class PostContainer extends Component {
+import cx from "classNames";
+class EditContainer extends Component {
     
     handlePostClick = (e,num) => {
         const {history} = this.props;
         e.preventDefault();
         history.push(`/post/${num}`);
     }
+    handleMenuClick = (btn) => {
+        const {DevelopActions} = this.props;
+        DevelopActions.menuToggle(btn);
+    }
     render(){
-        const {title, posts, index} = this.props;
+        const {title, posts, index, menuBtn} = this.props;
 
-        const {handlePostClick} = this;
-
+        const {
+            handlePostClick,
+            handleMenuClick
+        } = this;
+        const btn = menuBtn.toJS();
         return(
             <div className={styles.App}>
                 <header>
@@ -33,9 +39,48 @@ class PostContainer extends Component {
                                     <h3>Dashboard</h3>
                                 </header>
                                 <ul className={styles.dash_menu}>
-                                    <li><a href="#">게시글 작성</a></li>
-                                    <li><a href="#">게시글 수정</a></li>
-                                    <li><a href="#">게시글 삭제</a></li>
+                                    <li>
+                                        
+                                        <a href="#" className={btn.board?cx(styles.menu_item, styles.clicked):styles.menu_item} onClick={(e)=>handleMenuClick("board")}>
+                                            <span className={styles.side_title}>게시판</span>
+                                            {btn.board?
+                                                <span className={styles.opener + " fas fa-chevron-down"}></span>:
+                                                <span className={styles.opener + " fas fa-chevron-right"}></span>
+                                            }
+                                        </a>
+                                       
+                                    </li>
+                                    <li>
+                                        <a href="#" className={btn.post?cx(styles.menu_item, styles.clicked):styles.menu_item} onClick={(e)=>handleMenuClick("post")}>
+                                            <span className={styles.side_title}>게시글</span>
+                                            {btn.post?
+                                                <span className={styles.opener + " fas fa-chevron-down"}></span>:
+                                                <span className={styles.opener + " fas fa-chevron-right"}></span>
+                                            }
+                                            
+                                        </a>
+                                        {btn.post?
+                                            <ul className={styles.dash_menu}>
+                                                <li>
+                                                    <a href="#" className={styles.menu_item}>
+                                                        <span className={styles.side_title}>게시판</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" className={styles.menu_item}>
+                                                        <span className={styles.side_title}>게시판</span>
+                                                    </a>
+                                                </li>
+                                                <li></li>
+                                                <li></li>
+                                            </ul>
+                                            :""}
+                                    </li>
+                                    <li>
+                                        <a href="#" className={styles.menu_item}>
+                                            <span className={styles.side_title}>회원정보</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>
@@ -43,7 +88,37 @@ class PostContainer extends Component {
         
                 </section>
                 <section className={styles.dash_contents}>
-                    
+                    <div className={styles.container}>
+                        <div className={styles.container_fluid}>
+                            <div className={styles.row}>
+                                <div className={cx(styles.col_lg_9, styles.col_md_12, styles.col_sm_12, styles.col_xs_12)}>
+                                    <div className={styles.dash_title}>
+                                        <h2>2020년 4월 2일 19시 33분</h2>
+                                        <p>방문자 10명</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={styles.row}>
+                                <div className={cx(styles.col_lg_9, styles.col_md_12, styles.col_sm_12, styles.col_xs_12)}>
+                                    <div className={styles.board_card}>
+                                        <h3>테스트</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={styles.row}>
+                                <div className={cx(styles.col_lg_3, styles.col_md_6, styles.col_sm_6, styles.col_xs_12)}>
+                                    <div className={styles.board_card}>
+                                        <h3>테스트</h3>
+                                    </div>
+                                </div>
+                                <div className={cx(styles.col_lg_3, styles.col_md_6, styles.col_sm_6, styles.col_xs_12)}>
+                                    <div className={styles.board_card}>
+                                        <h3>테스트</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
         );
@@ -53,15 +128,16 @@ class PostContainer extends Component {
 export default connect(
     (state) => ({
         //현재 게시판 제목, 글 정보
-        current: state.view.get("current"),
+        current: state.develop.get("current"),
 
         //현재 게시판의 페이지
-        page: state.view.get("page"),
-        first: state.view.get("first"),
-        end: state.view.get("end")
+        page: state.develop.get("page"),
+        first: state.develop.get("first"),
+        end: state.develop.get("end"),
+        menuBtn: state.develop.get("menuBtn")
 
     }),
     (dispatch) => ({
-        ViewActions: bindActionCreators(viewActions, dispatch)
+        DevelopActions: bindActionCreators(developActions, dispatch)
     })  
-)(withRouter(PostContainer));
+)(withRouter(EditContainer));

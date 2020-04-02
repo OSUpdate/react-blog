@@ -8,6 +8,9 @@
   --info-background-color:#f2f4f7;
   --main-background-color:#fff;
 }
+section{
+  float: none !important;
+}
 header {
   
 }
@@ -15,7 +18,7 @@ a{
   text-decoration: none;
 }
 body, html{
-  
+  font-family: "Kaushan Script", "Helvetica Neue", Helvetica, Arial, cursive !important;
   background-color: var(--info-background-color);
   height:100%;
   margin:0;
@@ -128,6 +131,9 @@ nav, section, aside {
   margin-bottom: 1.8em;
   
 }
+.side_title{
+  position: relative;
+}
 .post_title h3{
   display: inline-block;
   margin:0.5em 0;
@@ -141,10 +147,35 @@ nav, section, aside {
 .contents_inner{
   padding: 3em 5em 1em 5em;
 }
+
+.post_title p{
+  display: inline;
+  color:var(--dark-color);
+  float: right;
+  padding: 0;
+}
+.dash_title {
+  padding-top:20px;
+  padding-bottom: 20px;
+  line-height: 20px;
+  vertical-align: middle;
+  text-align: left;
+}
+.dash_title h2{
+  font-weight: 600;
+  margin:0;
+  padding:0;
+}
+.dash_title p{
+  margin:0;
+  padding:0;
+  color:var(--dark-color);
+  padding: 0;
+}
 .dash_contents{
-  width: calc(100% - 280px);
   min-height:100vh;
-  padding-left: 280px;
+  margin-left: 260px;
+  padding: 20px 30px;
 }
 .dash_wrap{
   margin: 0;
@@ -157,10 +188,16 @@ nav, section, aside {
 .dashbar{
   background-color: #ffffff;
   color:var(--gray-color-color);
-  width: 280px;
+  width: 260px;
   top:0;
   bottom: 0;
   position: fixed;
+}
+.container{
+  margin: 0px;
+  padding: 0px;
+  max-width: 100%;
+  width: 100%;
 }
 .sidebar{
   background-color: var(--main-background-color);
@@ -181,8 +218,6 @@ nav, section, aside {
   border-bottom: 0;
   color: inherit;
   cursor: pointer;
-  display: block;
-  font-size: 0.9em;
   padding: 0.625em 0;
 }
 .menu ul{
@@ -193,18 +228,27 @@ nav, section, aside {
 .menu ul li{
   padding: 0.5em 0 0.5em 0;
 }
-.menu > ul > li > ul {
-  margin: 0.5em 0 1.5em 0;
-  padding-left: 1em;
-}
 .opener{
-  font-weight: 500;
+  padding-top:15px !important;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  position: absolute;
+  right: 0;
+  top:0;
+}
+.sub_menu{
+  padding: 0;
 }
 .menu > ul > li > .opener::before{
   display: inline-block;
   position: absolute;
   font-weight: 900;
   right: 2.2em;
+}
+.menu_item{
+  position: relative;
+  display: block;
 }
 .inner{
   background-color: var(--main-background-color);
@@ -217,18 +261,32 @@ nav, section, aside {
   height: 100%;
   padding:0.66667em 0 1.3333em 0;
 }
-.dash_menu > li > a, .dash_head{
+.dash_menu > li{
+  padding:0 !important;
+  margin-top: 5px;
+}
+.dash_menu > li > a, .dash_menu > li > span > a, .dash_head{
   padding-left: 24px;
 }
-.dash_menu > li{
+.dash_menu > li > a{
   color:var(--gray-color);
+  padding-top:15px;
+  padding-bottom: 15px;
 }
-.dash_menu > li:hover{
+.dash_menu > li > a:hover{
   color:var(--gray-focus-color) !important;
   background-color: var(--info-background-color);
   
 }
-
+.row{
+  box-sizing: border-box;
+  margin-left:-15px;
+  margin-right: -15px;
+}
+.clicked{
+  color:var(--gray-focus-color) !important;
+  background-color: var(--info-background-color);
+}
 .toggle{
   color:var(--main-button-color);
   padding: 0 0.5em;
@@ -349,7 +407,7 @@ justify-content: center!important;
 .btn_xl:focus,
 .btn_xl:active,
 .btn_xl.active,
-.open .dropdown-toggle.btn_xl {
+.dropdown-toggle.btn_xl {
   color: white;
   background-color: var(--main-button-color);
   border-color: var(--main-button-color);
@@ -522,6 +580,98 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
 .red input[type="password"]{
   border: 1px solid red !important;
   box-shadow: 0 0 1em 0 rgba(255, 0, 0, 0.175);
+}
+[class*='col_']{
+  box-sizing: border-box;
+}
+.col_lg_1, .col_lg_10, .col_lg_11, .col_lg_12, .col_lg_2, .col_lg_3, .col_lg_4, .col_lg_5, .col_lg_6, .col_lg_7, .col_lg_8, .col_lg_9, .col_md_1, .col_md_10, .col_md_11, .col_md_12, .col_md_2, .col_md_3, .col_md_4, .col_md_5, .col_md_6, .col_md_7, .col_md_8, .col_md_9, .col_sm_1, .col_sm_10, .col_sm_11, .col_sm_12, .col_sm_2, .col_sm_3, .col_sm_4, .col_sm_5, .col_sm_6, .col_sm_7, .col_sm_8, .col_sm_9, .col_xs_1, .col_xs_10, .col_xs_11, .col_xs_12, .col_xs_2, .col_xs_3, .col_xs_4, .col_xs_5, .col_xs_6, .col_xs_7, .col_xs_8, .col_xs_9 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+
+}
+.col_xs_12 {
+  width: 100%;
+}
+.col_xs_11 {
+  width: 91.66666667%;
+}
+.col_xs_10 {
+  width: 83.33333333%;
+}
+.col_xs_9 {
+  width: 75%;
+}
+.col_xs_8 {
+  width: 66.66666667%;
+}
+.col_xs_7 {
+  width: 58.33333333%;
+}
+.col_xs_6 {
+  width: 50%;
+}
+.col_xs_5 {
+  width: 41.66666667%;
+}
+.col_xs_4 {
+  width: 33.33333333%;
+}
+.col_xs_3 {
+  width: 25%;
+}
+.col_xs_2 {
+  width: 16.66666667%;
+}
+.col_xs_1 {
+  width: 8.33333333%;
+}
+.container_fluid {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.board_card{
+  background-color: white;
+}
+.main_content{
+  min-height: 100vh;
+}
+.btn-group-vertical>.btn-group:after, .btn-group-vertical>.btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .modal-header:after, .modal-header:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+  display: table;
+  content: '';
+}
+@media (min-width: 992px){
+  .col_md_3 {
+    width: 25%;
+}
+.col_md_4 {
+  width: 33.33333333% !important;
+}
+  .col_md_6 {
+    width: 50%;
+}
+.col_md_8 {
+  width: 66.66666667%;
+}
+.col_md_11 {
+  width: 91.66666667%;
+}
+.col_md_10 {
+  width: 83.33333333%;
+}
+.col_md_9 {
+  width: 75%;
+}
+  .col_md_12 {
+    width: 100%;
+}
+
+  .col_md_1, .col_md_10, .col_md_11, .col_md_12, .col_md_2, .col_md_3, .col_md_4, .col_md_5, .col_md_6, .col_md_7, .col_md_8, .col_md_9 {
+      float: left !important;
+  }
 }
 @media (min-width: 1280px){
   .toggle{

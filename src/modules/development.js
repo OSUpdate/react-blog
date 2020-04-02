@@ -2,6 +2,7 @@ import { List, Map, fromJS} from "immutable";
 import { handleActions, createAction} from "redux-actions";
 import { pender, applyPenders} from "redux-pender";
 import * as api from "../lib/api";
+//import { true } from "partial-js";
 
 const INIT = "develop/INIT";
 
@@ -13,7 +14,9 @@ const NEW_BOARD = "develop/NEW_BOARD";
 const UPDATE_BOARD = "develop/UPDATE_BOARD";
 const DELETE_BOARD = "develop/DELETE_BOARD";
 
-const CLOSE_MESSAGE = "account/CLOSE_MESSAGE";
+const CLOSE_MESSAGE = "develop/CLOSE_MESSAGE";
+
+const MENU_TOGGLE = "develop/MENU_TOGGLE";
 
 export const init = createAction(INIT, api.init);
 
@@ -27,6 +30,8 @@ export const deleteBoard = createAction(DELETE_BOARD,api.deleteBoard);
 
 export const closeMessage = createAction(CLOSE_MESSAGE);
 
+export const menuToggle = createAction(MENU_TOGGLE, menu => menu);
+
 const initialState = Map({
     message:Map({
         title: "",
@@ -39,7 +44,11 @@ const initialState = Map({
     //현재 게시판 페이징 처리 변수
     page:1,
     first:1,
-    end:10
+    end:10,
+    menuBtn:Map({
+        post:false,
+        board:false
+    })
 });
 const reducer = handleActions({
     [CLOSE_MESSAGE]: (state, action) => {
@@ -48,6 +57,15 @@ const reducer = handleActions({
             .setIn(["message", "content"],"")
             .setIn(["message", "modal"], false);
     },
+    [MENU_TOGGLE]: (state, {payload: menu}) => {
+        const closeMenu = state.get("menuBtn").findKey((item)=>item == true);
+        if(menu != closeMenu)
+            return state
+                .updateIn(["menuBtn", closeMenu], (item)=>!item)
+                .updateIn(["menuBtn", menu], item => !item);
+        return state.updateIn(["menuBtn", menu], item => !item);
+
+    }
 },initialState);
 export default applyPenders(reducer,[
     {
