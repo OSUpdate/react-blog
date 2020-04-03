@@ -8,9 +8,11 @@ import "draft-js/dist/Draft.css";
 import * as accountActions from "../modules/account";
 import "./style.css";
 import styles from "../App.css";
+import EditorController from "../component/EditorController";
 
 import cx from "classnames";
 import {Editor, EditorState, RichUtils} from "draft-js";
+
 const BLOCK_TYPES = [
     {label: "H1", style: "header-one"},
     {label: "H2", style: "header-two"},
@@ -42,9 +44,6 @@ class EditWriteContainer extends Component {
             )
         );
     }
-    _onClick = (e) => {
-        this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, e.target.name));
-    }
     _toggleInlineStyle(inlineStyle) {
         this.onChange(
             RichUtils.toggleInlineStyle(
@@ -53,11 +52,13 @@ class EditWriteContainer extends Component {
             )
         );
     }
+    _onClick = () => {
+        return (e) => this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, e.target.name));
+    }
     render(){
-        const btn = ["BOLD", "ITALIC", "UNDERLINE", "CODE"];
-        const buttons = btn.map(style => {
-            return <button key={style} onClick={this._onClick} name={style}>{style}</button>;
-        });
+        
+        const currentStyle = this.state.editorState.getCurrentInlineStyle();
+
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -90,7 +91,12 @@ class EditWriteContainer extends Component {
                                             </div>
                                             <div className={this.state.hasFocus?cx(styles.write_content,styles.hasFocus):styles.write_content}>
                                                 <div className={styles.toolbar}>
-                                                    {buttons}
+                                                    <EditorController
+                                                        toggleInline={this.toggleInlineStyle}
+                                                        toggleBlock={this.toggleBlockType}
+                                                        editorState={this.state.editorState}
+                                                    />
+
                                                 </div>
                                                 <Editor 
                                                     onFocus={() => this.setState({ hasFocus: true })}

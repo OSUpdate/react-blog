@@ -56,7 +56,17 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
   width: 100%;
 }
 input[type="text"]:focus, select:focus{
-  border: solid 2px #4acaa8 !important;
+  border: solid 1px #4acaa8 !important;
+}
+.style_button {
+  color: #999;
+  cursor: pointer;
+  margin-right: 16px;
+  padding: 2px 0;
+  display: inline-block;
+}
+.active{
+  color:var(--main-button-color);
 }
 .search > form::before{
   transform: scaleX(-1);
