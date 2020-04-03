@@ -1,0 +1,6 @@
+.DraftEditor-editorContainer,
+.public-DraftEditor-content {
+    padding-top:10px;
+    padding-left:20px;
+    min-height: 500px;
+}

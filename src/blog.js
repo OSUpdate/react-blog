@@ -24,6 +24,10 @@ const Blog = () => {
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/register" component={Register}/>
                     <Route exact path="/edit/:token" component={Edit}/>
+                    <Route exact path="/edit/:token/write" component={Edit}/>
+                    <Route exact path="/edit/:token/board" component={Edit}/>
+                    <Route exact path="/edit/:token/board/:bname" component={Edit}/>
+                    <Route exact path="/edit/:token/board/:bname/:num" component={Edit}/>
                     <Route component={NotFound}/>
                 </Switch>
             </BrowserRouter>

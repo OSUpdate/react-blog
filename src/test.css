@@ -1,18 +1,11 @@
-.title{
-    width: 100%;
-  text-align: center;
-  vertical-align: baseline;
-  
+div.DraftEditor-root {
+  border: 1px solid #000;
+  background-color: beige;
+  height: 200px;
+  width: 300px;
+  overflow-y: auto;
 }
-.main{
-    width:100%;
-}
-.logo{
-  margin-top: 20px;
-  margin-left: 91.3985px;
-  /*
-  margin: 20px 0px 20px 91.3985px;
-  margin-top: 28px;
-  margin-left: 91.3985px;
-  */
+div.DraftEditor-editorContainer,
+div.public-DraftEditor-content {
+  height: 100%;
 }

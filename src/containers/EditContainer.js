@@ -2,11 +2,15 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-import {withRouter} from "react-router-dom";
-
+import {withRouter, Switch, Route} from "react-router-dom";
+import {Line} from "react-chartjs-2";
+import cx from "classnames";
 import * as developActions from "../modules/development";
 import styles from "../App.css";
-import cx from "classNames";
+import EditMainContainer from "./EditMainContainer";
+import EditPostContainer from "./EditPostContainer";
+import EditReadContainer from "./EditReadContainer";
+import EditWriteContainer from "./EditWriteContainer";
 class EditContainer extends Component {
     
     handlePostClick = (e,num) => {
@@ -20,7 +24,7 @@ class EditContainer extends Component {
     }
     render(){
         const {title, posts, index, menuBtn} = this.props;
-
+        
         const {
             handlePostClick,
             handleMenuClick
@@ -63,12 +67,12 @@ class EditContainer extends Component {
                                             <ul className={styles.dash_menu}>
                                                 <li>
                                                     <a href="#" className={styles.menu_item}>
-                                                        <span className={styles.side_title}>게시판</span>
+                                                        <span className={styles.side_title}>모든 게시글</span>
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="#" className={styles.menu_item}>
-                                                        <span className={styles.side_title}>게시판</span>
+                                                        <span className={styles.side_title}>글쓰기</span>
                                                     </a>
                                                 </li>
                                                 <li></li>
@@ -88,37 +92,13 @@ class EditContainer extends Component {
         
                 </section>
                 <section className={styles.dash_contents}>
-                    <div className={styles.container}>
-                        <div className={styles.container_fluid}>
-                            <div className={styles.row}>
-                                <div className={cx(styles.col_lg_9, styles.col_md_12, styles.col_sm_12, styles.col_xs_12)}>
-                                    <div className={styles.dash_title}>
-                                        <h2>2020년 4월 2일 19시 33분</h2>
-                                        <p>방문자 10명</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={styles.row}>
-                                <div className={cx(styles.col_lg_9, styles.col_md_12, styles.col_sm_12, styles.col_xs_12)}>
-                                    <div className={styles.board_card}>
-                                        <h3>테스트</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={styles.row}>
-                                <div className={cx(styles.col_lg_3, styles.col_md_6, styles.col_sm_6, styles.col_xs_12)}>
-                                    <div className={styles.board_card}>
-                                        <h3>테스트</h3>
-                                    </div>
-                                </div>
-                                <div className={cx(styles.col_lg_3, styles.col_md_6, styles.col_sm_6, styles.col_xs_12)}>
-                                    <div className={styles.board_card}>
-                                        <h3>테스트</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <Switch>
+                        <Route exact path="/edit/:token" component={EditMainContainer}/>
+                        <Route exact path="/edit/:token/board" component={EditPostContainer}/>
+                        <Route exact path="/edit/:token/board/:bname" component={EditPostContainer}/>
+                        <Route exact path="/edit/:token/board/:bname/:num" component={EditReadContainer}/>
+                        <Route exact path="/edit/:token/write" component={EditWriteContainer}/>
+                    </Switch>
                 </section>
             </div>
         );

@@ -7,7 +7,7 @@ create table board(
 );
 create table userinfo(
 	id varchar(50) not null primary key,
-	password varchar(300) not null,
+	password varchar(30) not null,
 	email varchar(50) not null
 );
 create table post(
@@ -18,4 +18,13 @@ create table post(
     hits INT unsigned not null default '0',
     insert_date datetime,
     update_date datetime
+);
+create table comments(
+	num int not null auto_increment primary key,
+    comment varchar(500) not null,
+    post varchar(30) not null,
+    insert_date datetime,
+    update_date datetime,
+    nickname varchar(50) not null,
+    password varchar(30) null
 );
