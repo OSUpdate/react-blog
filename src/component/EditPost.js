@@ -4,15 +4,57 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {Line} from "react-chartjs-2";
 
-
+import EditPostList from "./EditPostList";
 import * as accountActions from "../modules/account";
 import styles from "../App.css";
 import cx from "classnames";
 
-
-class EditPostContainer extends Component {
-
+class EditPost extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            list:[
+                {
+                    title:"테스트",
+                    time:"날짜",
+                    checked:false
+                },
+                {
+                    title:"테스트1",
+                    time:"날짜",
+                    checked:false
+                },
+                {
+                    title:"테스트2",
+                    time:"날짜",
+                    checked:false
+                },
+                {
+                    title:"테스트3",
+                    time:"날짜",
+                    checked:false
+                },
+                {
+                    title:"테스트4",
+                    time:"날짜",
+                    checked:false
+                }
+            ]
+        };
+    }
+    handleChecked = (e)=>{
+        const clickButton = this.state.list.map(item => {
+            if(item.title === e.target.value)
+                item.checked = !item.checked;
+            return item;
+        });
+        this.setState({
+            list:clickButton
+        });
+    }
     render(){
+        const {list} = this.state;
+        const {handleChecked} = this;
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -60,39 +102,17 @@ class EditPostContainer extends Component {
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel}>
                                         <div className={cx(styles.panel_title, styles.list_title)}>
-                                            <button>새로고침</button>
-                                            <button>전체선택</button>
-                                            <button>삭제</button>
+                                            <span className={styles.style_button}>새로고침</span>
+                                            <span className={styles.style_button}>전체선택</span>
+                                            <span className={styles.style_button}>삭제</span>
                                         </div>
                                         <div className={styles.none_scroll_panel}>
                                             <ul className={styles.scroll_list}>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                    테스트
-                                                </li>
+                                                
+                                                <EditPostList
+                                                    posts={list}
+                                                    onChange={handleChecked}
+                                                />
                                             </ul>
                                         </div>
                                     </div>
@@ -113,4 +133,4 @@ export default connect(
     (dispatch) => ({
         //AccountActions: bindActionCreators(accountActions, dispatch)
     })  
-)(EditPostContainer);
+)(EditPost);

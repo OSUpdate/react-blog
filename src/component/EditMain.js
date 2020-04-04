@@ -38,7 +38,7 @@ const data = {
 };
 
 
-class EditMainContainer extends Component {
+class EditMain extends Component {
 
     render(){
         return(
@@ -205,4 +205,4 @@ export default connect(
     (dispatch) => ({
         AccountActions: bindActionCreators(accountActions, dispatch)
     })  
-)(EditMainContainer);
+)(EditMain);

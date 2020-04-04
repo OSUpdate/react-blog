@@ -28,6 +28,7 @@ const Blog = () => {
                     <Route exact path="/edit/:token/board" component={Edit}/>
                     <Route exact path="/edit/:token/board/:bname" component={Edit}/>
                     <Route exact path="/edit/:token/board/:bname/:num" component={Edit}/>
+                    <Route exact path="/edit/:token/write/:num" component={Edit}/>
                     <Route component={NotFound}/>
                 </Switch>
             </BrowserRouter>

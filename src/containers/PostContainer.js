@@ -24,10 +24,15 @@ class PostContainer extends Component {
         }
         return temp;
     }
+    handleClick = (e)=>{
+        e.preventDefault();
+        console.log(e.target);
+    }
     render(){
         const { current, first, end, page } = this.props;
 
         const {
+            handleClick,
             handlePostClick,
             pageNum
         } = this;
@@ -35,6 +40,7 @@ class PostContainer extends Component {
         const onClick = handlePostClick(data.title);
         const pages = pageNum(first,end, page);
         return(
+            
             <section className={styles.contents}>
                 <div className={styles.contents_inner}>
             
@@ -47,19 +53,12 @@ class PostContainer extends Component {
                         
                     />
                     <nav className={styles.pg_wrap}>
+                        <a className={"fas fa-chevron-left"}></a>
                         {pages}
+                        <a className={"fas fa-chevron-right"}></a>
                     </nav>
                 </div>
-                <div className={styles.slide}>
-                    <div className={styles.slide_inner}>
-                        <div className={styles.left}>
-                            <span className={"fas fa-chevron-left "}></span>
-                        </div>
-                        <div className={styles.right}>
-                            <span className={"fas fa-chevron-right "}></span>
-                        </div>
-                    </div>
-                </div>
+
             </section>
         );
     }

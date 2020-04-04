@@ -10,7 +10,7 @@ import styles from "../App.css";
 import cx from "classnames";
 
 
-class EditReadContainer extends Component {
+class EditRead extends Component {
 
     render(){
         return(
@@ -74,4 +74,4 @@ export default connect(
     (dispatch) => ({
         //AccountActions: bindActionCreators(accountActions, dispatch)
     })  
-)(EditReadContainer);
+)(EditRead);

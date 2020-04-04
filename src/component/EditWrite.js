@@ -8,30 +8,32 @@ import "draft-js/dist/Draft.css";
 import * as accountActions from "../modules/account";
 import "./style.css";
 import styles from "../App.css";
-import EditorController from "../component/EditorController";
+import EditorController from "./EditorController";
 
 import cx from "classnames";
-import {Editor, EditorState, RichUtils} from "draft-js";
+import {Editor, EditorState, RichUtils, ContentState} from "draft-js";
 
-const BLOCK_TYPES = [
-    {label: "H1", style: "header-one"},
-    {label: "H2", style: "header-two"},
-    {label: "H3", style: "header-three"},
-    {label: "H4", style: "header-four"},
-    {label: "H5", style: "header-five"},
-    {label: "H6", style: "header-six"},
-    {label: "Blockquote", style: "blockquote"},
-    {label: "UL", style: "unordered-list-item"},
-    {label: "OL", style: "ordered-list-item"},
-    {label: "Code Block", style: "code-block"},
-];
-class EditWriteContainer extends Component {
+class EditWrite extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            hasFocus: false,
-            editorState: EditorState.createEmpty()
-        };
+        const { match } = this.props;
+        if(match.params.num){
+            this.state = {
+                mode: true,
+                title:"",
+                hasFocus: false,
+                editorState: EditorState.createWithContent(ContentState.createFromText("test"))
+            };
+        }
+        else{
+            this.state = {
+                mode: false,
+                title:"",
+                hasFocus: false,
+                editorState: EditorState.createEmpty()
+            };
+        }
+        console.log(this.state.mode);
         this.onChange = editorState => this.setState({editorState});
         this.toggleBlockType = (type) => this._toggleBlockType(type);
         this.toggleInlineStyle = (style) => this._toggleInlineStyle(style);
@@ -52,13 +54,23 @@ class EditWriteContainer extends Component {
             )
         );
     }
+    handleTitleChange = (e) =>{
+        this.setState({
+            title:e.target.value
+        });
+    }
     _onClick = () => {
         return (e) => this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, e.target.name));
     }
+    getPostData = () => {
+        /*
+        this.setState({
+            editorState:EditorState.createWithContent(ContentState.createFromText("test"))
+        });
+        */
+    }
     render(){
-        
-        const currentStyle = this.state.editorState.getCurrentInlineStyle();
-
+        const {handleTitleChange} = this;
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -68,7 +80,11 @@ class EditWriteContainer extends Component {
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel_padding}>
                                         <div className={styles.path}>
-                                            <h3>경로</h3>
+                                            <select>
+                                                <option disabled selected hidden>게시판을 선택해주세요</option>
+                                                <option>1</option>
+                                                <option>2</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -86,7 +102,7 @@ class EditWriteContainer extends Component {
                                         <div className={styles.read_container}>
                                             <div className={styles.write_head}>
                                                 <div className={styles.write_title}>
-                                                    <input type="text" placeholder="제목을 입력하세요. " name="subject"/>
+                                                    <input type="text" placeholder="제목을 입력하세요" name="subject" onChange={handleTitleChange} value={this.state.title}/>
                                                 </div>
                                             </div>
                                             <div className={this.state.hasFocus?cx(styles.write_content,styles.hasFocus):styles.write_content}>
@@ -125,4 +141,4 @@ export default connect(
     (dispatch) => ({
         //AccountActions: bindActionCreators(accountActions, dispatch)
     })  
-)(EditWriteContainer);
+)(EditWrite);

@@ -7,6 +7,7 @@ import styles from "./App.css";
 import PostContainer from "./containers/PostContainer";
 import ReadContainer from "./containers/ReadContainer";
 import { withRouter, Switch, Route } from "react-router-dom";
+import cx from "classnames";
 class App extends Component {
     render() {
         return(
@@ -32,10 +33,27 @@ class App extends Component {
                                     <h3>전체 글</h3>
                                 </header>
                                 <ul>
-                                    <li><a href="#">Menu</a></li>
-                                    <li><span className={styles.opener + " fas fa-chevron-down"}>Sub Menu</span></li>
-                                    <li><a href="#">Menu</a></li>
-                                    <li><a href="#">Menu</a></li>
+                                    <li >
+                                        <a className={styles.menu_item} href="#">
+                                            <span className={styles.side_title}>Menu</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a className={styles.menu_item}>
+                                            <span className={styles.side_title}>Sub Menu</span>
+                                            <span className={styles.opener + " fas fa-chevron-down"}></span>
+                                        </a>
+                                    </li>
+                                    <li >
+                                        <a className={styles.menu_item} href="#">
+                                            <span className={styles.side_title}>Menu</span>
+                                        </a>
+                                    </li>
+                                    <li >
+                                        <a className={styles.menu_item} href="#">
+                                            <span className={styles.side_title}>Menu</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>

@@ -7,10 +7,10 @@ import {Line} from "react-chartjs-2";
 import cx from "classnames";
 import * as developActions from "../modules/development";
 import styles from "../App.css";
-import EditMainContainer from "./EditMainContainer";
-import EditPostContainer from "./EditPostContainer";
-import EditReadContainer from "./EditReadContainer";
-import EditWriteContainer from "./EditWriteContainer";
+import EditMain from "../component/EditMain";
+import EditPost from "../component/EditPost";
+import EditRead from "../component/EditRead";
+import EditWrite from "../component/EditWrite";
 class EditContainer extends Component {
     
     handlePostClick = (e,num) => {
@@ -93,11 +93,12 @@ class EditContainer extends Component {
                 </section>
                 <section className={styles.dash_contents}>
                     <Switch>
-                        <Route exact path="/edit/:token" component={EditMainContainer}/>
-                        <Route exact path="/edit/:token/board" component={EditPostContainer}/>
-                        <Route exact path="/edit/:token/board/:bname" component={EditPostContainer}/>
-                        <Route exact path="/edit/:token/board/:bname/:num" component={EditReadContainer}/>
-                        <Route exact path="/edit/:token/write" component={EditWriteContainer}/>
+                        <Route exact path="/edit/:token" component={EditMain}/>
+                        <Route exact path="/edit/:token/board" component={EditPost}/>
+                        <Route exact path="/edit/:token/board/:bname" component={EditPost}/>
+                        <Route exact path="/edit/:token/board/:bname/:num" component={EditRead}/>
+                        <Route exact path="/edit/:token/write" component={EditWrite}/>
+                        <Route exact path="/edit/:token/write/:num" component={EditWrite}/>
                     </Switch>
                 </section>
             </div>
