@@ -3,11 +3,11 @@ import classNames from "classnames";
 import styles from "../App.css";
 
 /* input 컴포넌트 */
-const ErrorInput = ({value, id, type, onChange, title, check, error, onKeyUp}) => {
+const ErrorInput = ({num, value, id, type, onChange, title, check, error, onKeyUp}) => {
     return (
-        <div className={classNames(styles.item, error ? styles.red : "")}>
-            <input className={error ? styles.test : ""} type={type} name={id} value={value} onChange={onChange} onKeyUp={onKeyUp} placeholder={title}/>
-            <p className={styles.error} >{error}</p>
+        <div className={classNames(styles.item, check ? styles.red : "")}>
+            <input className={check ? styles.test : ""} type={type} value={value} onChange={(e)=>onChange(e,num)} onKeyUp={(e)=>onKeyUp(e,num)} placeholder={title}/>
+            {check?<p className={styles.error} >{error}</p>:""}
         </div>
     );
 };

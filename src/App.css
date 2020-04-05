@@ -7,6 +7,7 @@
   --gray-color:#8d9498;
   --gray-focus-color:#212529;
   --info-background-color:#f2f4f7;
+  --bg-color:#EDEFF2;
   --main-background-color:#fff;
 }
 section{
@@ -24,7 +25,7 @@ a{
 body, html{
   color:var(--main-text-color);
   font-family: "Kaushan Script", "Helvetica Neue", Helvetica, Arial, cursive !important;
-  background-color: var(--info-background-color);
+  background-color: var(--bg-color);
   height:100%;
   margin:0;
   padding: 0;
@@ -78,8 +79,9 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
   text-decoration: none;
   width: 100%;
 }
+
 input[type="text"]:focus, select:focus{
-  border: solid 1px #4acaa8;
+  border: solid 1px #2c97de;
 }
 .style_button {
   color: #999;
@@ -225,7 +227,7 @@ nav, section, aside {
   box-sizing: border-box;
 }
 .hasFocus {
-  border: 1px solid var(--main-button-color) !important;
+  border: 1px solid #2c97de !important;
  }
  
 .write_content{
@@ -475,7 +477,7 @@ div.toolbar button {
 }
 .clicked{
   color:var(--gray-focus-color) !important;
-  background-color: var(--info-background-color);
+  background-color: #dbdbdb;
 }
 .toggle{
   color:var(--main-button-color);

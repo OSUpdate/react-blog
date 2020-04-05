@@ -81,14 +81,13 @@ class EditPost extends Component {
         );
     }
     handleChecked = (e)=>{
-        const clickButton = _.map(this.state.list,item => {
-            if(item.title === e.target.value)
-                item.checked = !item.checked;
-            return item;
-        });
         this.setState({
-            list:clickButton,
-            activeDelete:this.handleActiveButton(clickButton)
+            list:_.map(this.state.list,item => {
+                if(item.title === e.target.value)
+                    item.checked = !item.checked;
+                return item;
+            }),
+            activeDelete:this.handleActiveButton(this.state.list)
         });
     }
     render(){

@@ -6,14 +6,15 @@ const SignUpList = ({signUp, onChange, onKeyUp, onClick}) => {
     const SignUpList = signUp.map(
         (item, index) => {
             // 데이터 추출
-            const { id, checked, value, error, type, title } = item.toJS();
+            const { num, id, check, value, error, type, title } = item.toJS();
             return(
                 <ErrorInput
                     key={index}
+                    num={num}
                     id={id}
                     type={type}
                     title={title}
-                    checked={checked}
+                    check={check}
                     error={error}
                     value={value}
                     onChange={onChange}

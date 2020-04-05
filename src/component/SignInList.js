@@ -7,8 +7,7 @@ const SignInList = ({signIn, onChange}) => {
     const SignInList = signIn.map(
         (item, index) => {
             // 데이터 추출
-            console.log(item);
-            const { id, value, type, title} = item.toJS();
+            const { num, id, value, type, title} = item.toJS();
             return(
                 <SignIn
                     key={index}
