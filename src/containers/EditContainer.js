@@ -11,6 +11,7 @@ import EditMain from "../component/EditMain";
 import EditPost from "../component/EditPost";
 import EditRead from "../component/EditRead";
 import EditWrite from "../component/EditWrite";
+import EditBoard from "../component/EditBoard";
 class EditContainer extends Component {
     
     handlePostClick = (e,num) => {
@@ -99,6 +100,7 @@ class EditContainer extends Component {
                         <Route exact path="/edit/:token/board/:bname/:num" component={EditRead}/>
                         <Route exact path="/edit/:token/write" component={EditWrite}/>
                         <Route exact path="/edit/:token/write/:num" component={EditWrite}/>
+                        <Route exact path="/edit/:token/update" component={EditBoard}/>
                     </Switch>
                 </section>
             </div>

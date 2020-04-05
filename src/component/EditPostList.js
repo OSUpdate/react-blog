@@ -21,6 +21,9 @@ const EditPostList = ({posts, onChange}) => {
                         <div className={styles.item_title}>
                             <a>{title}</a>
                         </div>
+                        <div className={styles.item_time}>
+                            <a>{time}</a>
+                        </div>
                     </div>
                 </li>
             );

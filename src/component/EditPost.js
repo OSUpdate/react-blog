@@ -8,11 +8,13 @@ import EditPostList from "./EditPostList";
 import * as accountActions from "../modules/account";
 import styles from "../App.css";
 import cx from "classnames";
+import _ from  "partial-js";
 
 class EditPost extends Component {
     constructor(props){
         super(props);
         this.state = {
+            activeDelete:false,
             list:[
                 {
                     title:"테스트",
@@ -42,8 +44,43 @@ class EditPost extends Component {
             ]
         };
     }
+    handleActiveButton = (list) => {
+        return _.every(list,item => item.checked === false)?
+            false:true;
+    }
+    setPage = (first, end, page) => {
+        let temp = new Array();
+        for(let i = first; i<=end;i++){
+            temp.push(<a key={i} className={i==page?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</a>);
+        }
+        return temp;
+    }
+    handleAllCheck = (e) => {
+        _.go(
+            _.mr(this.state.list,_.every(this.state.list,item=>item.checked === false)),
+            (list,checked) => checked?
+                _.map(list,item=>{
+                    item.checked=true;
+                    return item;
+                }):
+                _.every(this.state.list,item=>item.checked === true)?
+                    _.map(list,item=>{
+                        item.checked=false;
+                        return item;
+                    }):
+                    _.map(list,item=>{
+                        item.checked=true;
+                        return item;
+                    })
+
+            ,
+            (list) => this.setState({
+                list:list
+            })
+        );
+    }
     handleChecked = (e)=>{
-        const clickButton = this.state.list.map(item => {
+        const clickButton = _.map(this.state.list,item => {
             if(item.title === e.target.value)
                 item.checked = !item.checked;
             return item;
@@ -53,8 +90,9 @@ class EditPost extends Component {
         });
     }
     render(){
-        const {list} = this.state;
-        const {handleChecked} = this;
+        const {list,activeDelete} = this.state;
+        const {handleChecked,handleAllCheck, setPage} = this;
+        const pages = setPage(1,10,1);
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -102,9 +140,9 @@ class EditPost extends Component {
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel}>
                                         <div className={cx(styles.panel_title, styles.list_title)}>
-                                            <span className={styles.style_button}>새로고침</span>
-                                            <span className={styles.style_button}>전체선택</span>
-                                            <span className={styles.style_button}>삭제</span>
+                                            <span className={cx(styles.style_button, styles.hover)}>새로고침</span>
+                                            <span className={cx(styles.style_button, styles.hover)} onClick={handleAllCheck}>전체선택</span>
+                                            <span className={activeDelete?cx(styles.style_button, styles.active_red):styles.style_button}>삭제</span>
                                         </div>
                                         <div className={styles.none_scroll_panel}>
                                             <ul className={styles.scroll_list}>
@@ -114,6 +152,11 @@ class EditPost extends Component {
                                                     onChange={handleChecked}
                                                 />
                                             </ul>
+                                            <nav className={styles.pg_wrap}>
+                                                <a className={"fas fa-chevron-left"}></a>
+                                                {pages}
+                                                <a className={"fas fa-chevron-right"}></a>
+                                            </nav>
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +171,9 @@ class EditPost extends Component {
 
 export default connect(
     (state) => ({
-        
+        //boards:state.edit.get("boards"),
+        //posts:state.edit.get("posts"),
+
     }),
     (dispatch) => ({
         //AccountActions: bindActionCreators(accountActions, dispatch)

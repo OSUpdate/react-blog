@@ -20,7 +20,7 @@ class PostContainer extends Component {
     pageNum = (first, end, page) => {
         let temp = new Array();
         for(let i = first; i<=end;i++){
-            temp.push(<a className={i==page?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</a>);
+            temp.push(<a key={i} className={i==page?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</a>);
         }
         return temp;
     }

@@ -10,3 +10,6 @@
 .fa-check{
   line-height: 1.7;
 }
+.fa-chevron-left, .fa-chevron-right, .fa-chevron-down, .fa-chevron-up{
+  cursor: pointer;
+}
