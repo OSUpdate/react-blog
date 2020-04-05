@@ -75,7 +75,8 @@ class EditPost extends Component {
 
             ,
             (list) => this.setState({
-                list:list
+                list:list,
+                activeDelete:this.handleActiveButton(list)
             })
         );
     }
@@ -86,7 +87,8 @@ class EditPost extends Component {
             return item;
         });
         this.setState({
-            list:clickButton
+            list:clickButton,
+            activeDelete:this.handleActiveButton(clickButton)
         });
     }
     render(){
