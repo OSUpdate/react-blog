@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 var path = require("path");
 // eslint-disable-next-line no-unused-vars
-var webpack = require("webpack");
 // eslint-disable-next-line no-unused-vars
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var autoprefixer = require ("autoprefixer");
@@ -33,11 +32,11 @@ module.exports = {
     devServer: {
         inline: true,
         hot: true,
-        contentBase: "./public/",
+        contentBase: __dirname +"../public/",
         historyApiFallback: true,
         proxy: {
             "/api/" : {
-                target: "http://localhost:3000",
+                target: "http://localhost:3001",
                 changeOrigin : true
             }
         }

@@ -3,13 +3,14 @@ import SignIn from "./SignIn";
 import {Link} from "react-router-dom";
 import { List, Map } from "immutable";
 /* input 컴포넌트 리스트 */
-const SignInList = ({signIn, onChange}) => {
+const SignInList = ({signIn, onClick, onChange}) => {
     const SignInList = signIn.map(
         (item, index) => {
             // 데이터 추출
             const { num, id, value, type, title} = item.toJS();
             return(
                 <SignIn
+                    num={num}
                     key={index}
                     id={id}
                     type={type}
@@ -23,47 +24,13 @@ const SignInList = ({signIn, onChange}) => {
     return (
         <React.Fragment>
             {SignInList}
-            <input type="submit" value="로그인"/>
-            <Link to="/register"><p>회원가입</p></Link>
+            <input type="submit" value="로그인" onClick={onClick}/>
+            <a href="/register"><p>회원가입</p></a>
         </React.Fragment>
     );
 
 };
 SignInList.defaultProps = {
-    signUp:List([
-        Map({
-            id:"id",
-            type: "text",
-            title:"아이디",
-            value:"",
-            error: "",
-            checked: false
-        }),
-        Map({
-            id:"password",
-            type: "password",
-            title:"비밀번호",
-            value:"",
-            error:"",
-            checked: false,
-        }),
-        Map({
-            id:"check",
-            type: "password",
-            title:"비밀번호 확인",
-            value:"",
-            error:"",
-            checked: false,
-        }),
-        Map({
-            id:"email",
-            type: "email",
-            title:"이메일",
-            value:"",
-            error:"",
-            checked: false,
-        })
-    ]),
     signIn:List([
         Map({
             id:"id",

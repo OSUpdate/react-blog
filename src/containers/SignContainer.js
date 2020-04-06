@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter} from "react-router-dom";
-
+import {signin, signup} from "../lib/api";
 import * as accountActions from "../modules/account";
 import SignInList from "../component/SignInList";
 import SignUpList from "../component/SignUpList";
@@ -107,32 +107,64 @@ class SignContainer extends Component {
 
     }
     /* 회원가입 버튼 onClick 함수 */
-    handleSignUpClick = async () => {
+    handleSignUpSubmit = (e) => {
+        const {signUp} = this.state;
+        e.preventDefault();
+        const id = signUp.getIn([0,"value"]);
+        const pw = signUp.getIn([1,"value"]);
+        const check = signUp.getIn([2,"value"]);
+        const email = signUp.getIn([3,"value"]);
+        
+        _.go(
+            _.every([0,1,2,3],item=>
+                !signUp.getIn([item,"check"])
+            ),
+            checked => checked?signup(id,pw,check,email):_.stop(),
+            (response) => {
+                console.log(response);
+                return response;
+            },
+            _.catch()
+        );
     }
     handleSignInChange = (e, num) => {
-       
+        this.setState({
+            signIn:this.state.signIn.setIn([num,"value"],e.target.value)
+        });
+    }
+    handleSignInSubmit = (e) => {
+        e.preventDefault();
+        const id = this.state.signIn.getIn([0,"value"]);
+        const pw = this.state.signIn.getIn([1,"value"]);
+        _.go(
+            signin(id,pw),
+            item => {console.log(item,"then");
+                return item;},
+            _.catch(res => console.log(res,"catch"))
+        );
     }
     render(){
         const {signIn, signUp} = this.state;
         const {
+            handleSignInSubmit,
             handleSignInChange,
-            handleSignUpClick,
+            handleSignUpSubmit,
             handleSignUpChange,
             handleSignUpInput
         } = this;
-        console.log(this.props.location);
         return(
             <section className={styles.full}>
                 <div className={styles.sign}>
                     {this.path?
                         <SignUpList
                             signUp={signUp}
-                            onClick={handleSignUpClick}
+                            onClick={handleSignUpSubmit}
                             onChange={handleSignUpInput}
                             onKeyUp={handleSignUpChange}
                         />:
                         <SignInList
                             signIn={signIn}
+                            onClick={handleSignInSubmit}
                             onChange={handleSignInChange}
                         />
                     }
