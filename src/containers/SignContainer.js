@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter} from "react-router-dom";
-import {signin, signup} from "../lib/api";
+import {signin, signup, checkLogin} from "../lib/api";
 import * as accountActions from "../modules/account";
 import SignInList from "../component/SignInList";
 import SignUpList from "../component/SignUpList";
@@ -18,6 +18,11 @@ class SignContainer extends Component {
         this.path = location.pathname === "/register"?true:false;
         
         this.state = {
+            token:"",
+            message:Map({
+                error:false,
+                message:""
+            }),
             signUp:List([
                 Map({
                     num:0,
@@ -75,6 +80,28 @@ class SignContainer extends Component {
             ]),
         };
     }
+    componentDidMount(){
+        console.log(localStorage.getItem("userInfo"));
+        const {history} = this.props;
+        _.go(
+            ()=>localStorage.getItem("userInfo")?JSON.parse(localStorage.getItem("userInfo")):_.stop(),
+            (info) => {
+                this.setState({
+                    token:info.token
+                });
+            },
+            checkLogin,
+            (res) => {
+                const {response} = res.data;
+                
+                response.result?history.push(`/edit/${response.token}`):localStorage.removeItem("userInfo");
+            },
+            _.catch(error=>{
+                console.log(error);
+                localStorage.removeItem("userInfo");
+            })
+        );
+    }
     handleSignUpInput = (e, num) => {
         this.setState({
             signUp:this.state.signUp.setIn([num,"value"],e.target.value)
@@ -108,6 +135,7 @@ class SignContainer extends Component {
     }
     /* 회원가입 버튼 onClick 함수 */
     handleSignUpSubmit = (e) => {
+        const {history} = this.props;
         const {signUp} = this.state;
         e.preventDefault();
         const id = signUp.getIn([0,"value"]);
@@ -120,11 +148,15 @@ class SignContainer extends Component {
                 !signUp.getIn([item,"check"])
             ),
             checked => checked?signup(id,pw,check,email):_.stop(),
-            (response) => {
-                console.log(response);
-                return response;
+            (res) => {
+                const {response} = res.data;
+                response.result?history.push("/login"):this.setState({
+                    message:this.state.message.set("error",true).set("message",response.error)
+                });
             },
-            _.catch()
+            _.catch(error=>{
+                console.log(error);
+            })
         );
     }
     handleSignInChange = (e, num) => {
@@ -134,14 +166,27 @@ class SignContainer extends Component {
     }
     handleSignInSubmit = (e) => {
         e.preventDefault();
+        const {history} = this.props;
         const id = this.state.signIn.getIn([0,"value"]);
         const pw = this.state.signIn.getIn([1,"value"]);
         _.go(
             signin(id,pw),
-            item => {console.log(item,"then");
-                return item;},
+            res => {
+                const {response} = res.data;
+                response.result?history.push(`/edit/${response.token}`):this.setState({
+                    message:this.state.message.set("message",response.error).set("error",true)
+                });
+            },
             _.catch(res => console.log(res,"catch"))
         );
+    }
+    componentDidUpdate(prevProps, prevState) {
+        prevState.token !== this.state.token&&this.state.token?localStorage.setItem(
+            "userInfo",
+            JSON.stringify({
+                token: this.props.token
+            })):null;
+        
     }
     render(){
         const {signIn, signUp} = this.state;

@@ -65,11 +65,11 @@ router.post("/account/signin", async function (req, res, next) {
                 _.stop();
             })(connect),
         (connect) => {
-            const token = bcrypt.hashSync(req.body.request.id + Date.now()).replace(/\//g,"");
-            connect.query("update logged set token = ? where uid = ?", [token, req.body.request.id]);
+            const token = bcrypt.hashSync(id + Date.now()).replace(/\//g,"");
+            connect.query("update logged set token = ? where uid = ?", [token, id]);
             req.session.loginInfo = {
                 token:token,
-                id: req.body.request.id
+                id: id
             };
             connect.release();
             res.json({
@@ -78,19 +78,78 @@ router.post("/account/signin", async function (req, res, next) {
                     token: token
                 }
             });
-        }
+        },
+        _.catch(error=>{
+            console.log(error);
+            res.json({
+                response:{
+                    result:false,
+                    error: "로그인에 실패했습니다"
+                }
+            });
+        })
     );
     /* db와 연동해 계정 확인 */
     return res;
 
 });
-router.post("/account/signup", function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    return res.json({
-        Response: {
+router.get("/account/getinfo", function (req, res, next) {
+    req.session.loginInfo?res.json({
+        response: {
             result: true,
+            token: req.session.loginInfo.token
+        }
+    }):res.json({
+        response: {
+            result: false
         }
     });
+    return res;
+});
+router.post("/account/signup", function (req, res, next) {
+    const {id, password, check, email} = req.body.request.data;
+
+    _.go(
+        pool.getConnection(async conn => conn),
+        (connect) => _.isEmpty(connect.query("select * from userinfo where id = ? or email = ?",[id, email])[0])?
+            connect:(function(connect){
+                connect.release();
+                res.json({
+                    response:{
+                        result: false,
+                        error: "이미 존재하는 계정입니다"
+                    }
+                });
+                _.stop();
+            })(connect),
+        (connect) => {
+            const token = bcrypt.hashSync(id + Date.now()).replace(/\//g,"");
+            connect.query("insert into userinfo (id, password, email) values(?, ?, ?)", [id, encrypt(password), email]);
+            connect.query("insert into logged (token, uid) values(?, ?)", [token, id]);
+            req.session.loginInfo = {
+                token:token,
+                id: id
+            };
+            connect.release();
+            res.json({
+                response:{
+                    result: true,
+                    token: token
+                }
+            });
+        },
+        _.catch(error=>{
+            console.log(error);
+            res.json({
+                response:{
+                    result:false,
+                    error: "회원가입에 실패했습니다"
+                }
+            });
+        })
+    );
+    /* db와 연동해 계정 확인 */
+    return res;
 
 });
 module.exports = router;
