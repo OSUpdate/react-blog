@@ -3,7 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-
+var session = require("express-session");
 var indexRouter = require("./routes/index");
 var apiRouter = require("./routes/api");
 
@@ -18,6 +18,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(session({
+    secret: "test",
+    resave: false,
+    saveUninitialized: true
+}));
 
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
@@ -36,7 +42,8 @@ app.use(function(err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render("error");
+    res.redirect( "http://127.0.0.1:3000/404");
+    res.end();
 });
 
 module.exports = app;
