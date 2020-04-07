@@ -664,6 +664,7 @@ input{
   font-size: 0.9em;
 }
 .item_buttons{
+  display: contents;
   box-sizing: border-box;
   line-height: 1.7;
   flex:1;

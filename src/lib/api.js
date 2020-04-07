@@ -6,6 +6,30 @@ export const prevBoard = () => axios.get("/api/prev");
 export const search = () => axios.get("/api/search");
 export const checkLogin = () => axios.get("/api/account/getinfo");
 export const logout = () => axios.get("/api/account/logout");
+export const getBoards = (token) => axios.post("/api/board/get",{
+    request:{
+        data:{
+            token
+        }
+    }
+});
+export const insertBoard = (token, title) => axios.post("/api/board/insert",{
+    request:{
+        data:{
+            token,
+            title
+        }
+    }
+});
+export const updateBoard = (token, orderNo, title) => axios.post("/api/board/update",{
+    request:{
+        data:{
+            token,
+            orderNo,
+            title
+        }
+    }
+});
 export const signin = (id,password) => axios.post("/api/account/signin",{
     request:{
         data:{
@@ -67,17 +91,6 @@ export const newBoard = (token,title,parent) => axios.post("/api/develop/board/n
         token,
         data:{
             title,
-            parent
-        }
-    }
-});
-
-export const updateBoard = (token,title,change,parent) => axios.post("/api/develop/board/update",{
-    request:{
-        token,
-        data:{
-            title,
-            change,
             parent
         }
     }

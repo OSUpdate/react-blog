@@ -2,8 +2,8 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-import {Line} from "react-chartjs-2";
-
+import {getBoards, updateBoard, insertBoard} from "../lib/api";
+import { List, Map, fromJS } from "immutable";
 import EditBoardList from "./EditBoardList";
 import * as accountActions from "../modules/account";
 import styles from "../App.css";
@@ -14,75 +14,84 @@ import _ from  "partial-js";
 class EditBoard extends Component {
     constructor(props){
         super(props);
+        
         this.state = {
             activeDelete:false,
-            list:[
-                {
-                    num:1,
-                    title:"테스트",
-                    update:false
-                },
-                {
-                    num:2,
-                    title:"테스트1",
-                    update:false
-                },
-                {
-                    num:3,
-                    title:"테스트2",
-                    update:false
-                },
-                {
-                    num:4,
-                    title:"테스트3",
-                    update:false
-                },
-                {
-                    num:5,
-                    title:"테스트4",
-                    update:false
-                }
-            ]
+            list:List()
         };
+    }
+    componentDidMount(){
+        const {match} = this.props;
+        _.go(
+            match.params.token,
+            (token) => getBoards(token),
+            (res) => {
+                const {response} = res.data;
+                return response.data;
+            },
+            _.map(item=>Map(item)),
+            (list)=>this.setState({
+                list:List(list)
+            }),
+            _.catch(error=>{console.log(error);})
+        );
+    }
+    stateButton = (token, num, state, value) => {
+        console.log(value);
+        const modify = {
+            "수정":this.setState({
+                list:this.state.list.updateIn([num,"update"],update=>!update)
+            }),
+            "확인":this.state.list.getIn([num,"new"])?
+                _.go(
+                    _.mr(token,value),
+                    (token,value)=>insertBoard(token,value),
+                    (res) => res.data.result?this.setState({
+                        list:this.state.list.updateIn([num,"update"],update=>!update).updateIn([num,"new"],false)
+                    }):_.stop()
+                ):
+                _.go(
+                    _.mr(token,this.state.list.getIn([num,"orderNo"]),value),
+                    (token,orderNo,value)=>updateBoard(token,orderNo,value),
+                    (res) => res.data.result?this.setState({
+                        list:this.state.list.updateIn([num,"update"],update=>!update)
+                    }):_.stop()
+    
+                )
+        };
+        return modify[state];
     }
     handleActiveButton = (list) => {
         return _.every(list,item => item.checked === false)?
             false:true;
     }
+    /*
     handleChecked = (e)=>{
         this.setState({ 
             list:_.map(this.state.list,item => {
+                const {title, checked} = item.toJS();
                 if(item.title === e.target.value)
                     item.checked = !item.checked;
                 return item;
             }),
-            activeDelete:this.handleActiveButton(this.state.list)
+            activeDelete:this.handleActiveButton(this.state.list.toJS())
         });
     }
-    
+    */
     handleAddClick = (e) =>{
+        let temp = this.state.list.toJS();
         this.setState({
-            list:this.state.list.concat({num:this.state.list[this.state.list.length-1].num+1,title:"",update:true})
-        });
-        console.log(this.state.list);
-    }
-    handleChangeInput = (e, num) => {
-        this.setState({
-            list:_.map(this.state.list,item=>{
-                if(item.num === num)
-                    item.title = e.target.value;
-                return item;
-            })
+            list:fromJS(temp.concat({num:temp[temp.length-1].num+1,title:"",update:true,new:true}))
         });
     }
-    handleConfirmInput = (e, num) => {
+    handleChangeInput = (e, order) => {
         this.setState({
-            list:_.map(this.state.list,item=>{
-                if(item.num === num)
-                    item.update = !item.update;
-                return item;
-            })
+            list:this.state.list.setIn([order,"title"],e.target.value)
         });
+    }
+    handleConfirmInput = (e, num, state) => {
+        const {match} = this.props;
+        this.stateButton(match.params.token,num,state,this.state.list.getIn([num,"title"]));
     }
     handleDeleteItem = (e, num) => {
         _.removeByIndex(this.state.list,_.findIndex(this.state.list,(item)=>item.num === num));
@@ -127,7 +136,10 @@ class EditBoard extends Component {
         );
     }
 }
-
+EditBoard.defaultProps = {
+    activeDelete:false,
+    list:List()
+};
 export default connect(
     (state) => ({
         

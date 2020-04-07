@@ -16,6 +16,9 @@ const encrypt = (value) => {
         .update(value)
         .digest("hex");
 };
+const auth = (req,session) => {
+    return req === session;
+};
 
 // /api/insert 경로 라우터 연결
 router.post("/insert", function (req, res, next) {
@@ -48,6 +51,89 @@ router.post("/update", function (req, res, next) {
     });
     
 
+});
+router.post("/board/update", async function (req, res, next) {
+    /* db와 연동해 계정 확인 */
+    const {token, orderNo, title} = req.body.request.data;
+    _.go(
+        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
+        (check, connect) => check?connect.query("update board set board_name = ? where orderNo = ?",[title,orderNo]):(()=>{
+            res.json({
+                response:{
+                    result: false,
+                }
+            });
+            return _.stop();
+        })(),
+        () => res.json({
+            response:{
+                result: true
+            }
+        }),
+        _.catch(error=>console.log(error))
+    );
+    return res;
+    
+
+});
+router.post("/board/insert", async function (req, res, next) {
+    /* db와 연동해 계정 확인 */
+    const {token, title} = req.body.request.data;
+    _.go(
+        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
+        (check, connect) => check?connect.query("insert into board set ?",{board_name:title}):(()=>{
+            res.json({
+                response:{
+                    result: false,
+                }
+            });
+            return _.stop();
+        })(),
+        (row) => {
+            console.log(row);
+            res.json({
+                response:{
+                    result: true
+                }
+            });
+        },
+        _.catch(error=>console.log(error))
+    );
+    return res;
+    
+
+});
+// /api/board/get 경로 라우터 연결
+router.post("/board/get", async function(req, res, next){
+    const {token} = req.body.request.data;
+    _.go(
+        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
+        (check, connect) => check?connect.query("select board_name,orderNo from board order by orderNo"):(()=>{
+            res.json({
+                response:{
+                    result: false,
+                }
+            });
+            return _.stop();
+        })(),
+        (row) =>row[0],
+        _.map((item,index)=>{
+            return {
+                num:index,
+                title:item.board_name,
+                orderNo:item.orderNo,
+                update:false,
+                new:false
+            };
+        }),
+        (data) => res.json({
+            response:{
+                result: true,
+                data:data
+            }
+        })
+    );
+    return res;
 });
 router.post("/account/signin", async function (req, res, next) {
     const {id, password} = req.body.request.data;
@@ -127,7 +213,8 @@ router.get("/account/getinfo", function (req, res, next) {
     });
     return res;
 });
-router.post("/account/signup", function (req, res, next) {
+
+router.post("/account/signup", async function (req, res, next) {
     const {id, password, check, email} = req.body.request.data;
 
     _.go(

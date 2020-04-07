@@ -2,7 +2,7 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-import {withRouter, Switch, Route} from "react-router-dom";
+import {withRouter, Switch, Route, Link} from "react-router-dom";
 import {Line} from "react-chartjs-2";
 import {checkLogin, logout} from "../lib/api";
 import cx from "classnames";
@@ -69,8 +69,8 @@ class EditContainer extends Component {
         );
     }
     render(){
-        const {title, posts, index, menuBtn} = this.props;
-        
+        const {title, posts, index, menuBtn, match} = this.props;
+
         const {
             handlePostClick,
             handleMenuClick,
@@ -99,13 +99,9 @@ class EditContainer extends Component {
                                     </li>
                                     <li>
                                         
-                                        <a href="#" className={btn.board?cx(styles.menu_item, styles.clicked):styles.menu_item} onClick={(e)=>handleMenuClick("board")}>
+                                        <Link to={`/edit/${match.params.token}/update`} className={styles.menu_item}>
                                             <span className={styles.side_title}>게시판</span>
-                                            {btn.board?
-                                                <span className={styles.opener + " fas fa-chevron-down"}></span>:
-                                                <span className={styles.opener + " fas fa-chevron-right"}></span>
-                                            }
-                                        </a>
+                                        </Link>
                                        
                                     </li>
                                     <li>
