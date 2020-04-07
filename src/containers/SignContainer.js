@@ -81,7 +81,6 @@ class SignContainer extends Component {
         };
     }
     componentDidMount(){
-        console.log(localStorage.getItem("userInfo"));
         const {history} = this.props;
         _.go(
             ()=>localStorage.getItem("userInfo")?JSON.parse(localStorage.getItem("userInfo")):_.stop(),

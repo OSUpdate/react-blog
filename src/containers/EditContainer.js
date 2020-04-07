@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter, Switch, Route} from "react-router-dom";
 import {Line} from "react-chartjs-2";
+import {checkLogin, logout} from "../lib/api";
 import cx from "classnames";
 import * as developActions from "../modules/development";
 import styles from "../App.css";
@@ -12,8 +13,39 @@ import EditPost from "../component/EditPost";
 import EditRead from "../component/EditRead";
 import EditWrite from "../component/EditWrite";
 import EditBoard from "../component/EditBoard";
+import _ from  "partial-js";
+
 class EditContainer extends Component {
-    
+    constructor(props){
+        super(props);
+        this.state = {
+            token:""
+        };
+    }
+    componentDidMount(){
+        const {history} = this.props;
+        _.go(
+            ()=>localStorage.getItem("userInfo")?JSON.parse(localStorage.getItem("userInfo")):history.push("/login"),
+            (info) => {
+                this.setState({
+                    token:info.token
+                });
+            },
+            checkLogin,
+            (res) => {
+                const {response} = res.data;
+                const {match} = this.props;
+                response.result?match.params.token !== response.token?history.push(`/edit/${response.token}`):_.stop():(()=>{
+                    localStorage.removeItem("userInfo");
+                    history.push("/login");
+                })();
+            },
+            _.catch(error=>{
+                console.log(error);
+                localStorage.removeItem("userInfo");
+            })
+        );
+    }
     handlePostClick = (e,num) => {
         const {history} = this.props;
         e.preventDefault();
@@ -23,12 +55,26 @@ class EditContainer extends Component {
         const {DevelopActions} = this.props;
         DevelopActions.menuToggle(btn);
     }
+    handleLogout = async () => {
+        const {history} = this.props;
+        _.go(
+            localStorage.removeItem("userInfo"),
+            logout,
+            (res) => {
+                const {response} = res.data;
+                response.result?history.push("/login"):console.log(response.error);
+            },
+            _.catch(error=>
+                console.log(error))
+        );
+    }
     render(){
         const {title, posts, index, menuBtn} = this.props;
         
         const {
             handlePostClick,
-            handleMenuClick
+            handleMenuClick,
+            handleLogout
         } = this;
         const btn = menuBtn.toJS();
         return(
@@ -44,6 +90,13 @@ class EditContainer extends Component {
                                     <h3>Dashboard</h3>
                                 </header>
                                 <ul className={styles.dash_menu}>
+                                    <li>
+                                        
+                                        <a href="#" className={styles.menu_item} onClick={handleLogout}>
+                                            <span className={styles.side_title}>로그아웃</span>
+                                        </a>
+                                       
+                                    </li>
                                     <li>
                                         
                                         <a href="#" className={btn.board?cx(styles.menu_item, styles.clicked):styles.menu_item} onClick={(e)=>handleMenuClick("board")}>
@@ -94,13 +147,13 @@ class EditContainer extends Component {
                 </section>
                 <section className={styles.dash_contents}>
                     <Switch>
-                        <Route exact path="/edit/:token" component={EditMain}/>
-                        <Route exact path="/edit/:token/board" component={EditPost}/>
-                        <Route exact path="/edit/:token/board/:bname" component={EditPost}/>
-                        <Route exact path="/edit/:token/board/:bname/:num" component={EditRead}/>
-                        <Route exact path="/edit/:token/write" component={EditWrite}/>
-                        <Route exact path="/edit/:token/write/:num" component={EditWrite}/>
-                        <Route exact path="/edit/:token/update" component={EditBoard}/>
+                        <Route exact={true} path="/edit/:token" component={EditMain}/>
+                        <Route exact={true} path="/edit/:token/board" component={EditPost}/>
+                        <Route exact={true} path="/edit/:token/board/:bname" component={EditPost}/>
+                        <Route exact={true} path="/edit/:token/board/:bname/:num" component={EditRead}/>
+                        <Route exact={true} path="/edit/:token/write" component={EditWrite}/>
+                        <Route exact={true} path="/edit/:token/write/:num" component={EditWrite}/>
+                        <Route exact={true} path="/edit/:token/update" component={EditBoard}/>
                     </Switch>
                 </section>
             </div>

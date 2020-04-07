@@ -65,7 +65,7 @@ router.post("/account/signin", async function (req, res, next) {
                 _.stop();
             })(connect),
         (connect) => {
-            const token = bcrypt.hashSync(id + Date.now()).replace(/\//g,"");
+            const token = bcrypt.hashSync(id + Date.now()).replace(/\/|\./g,"");
             connect.query("update logged set token = ? where uid = ?", [token, id]);
             req.session.loginInfo = {
                 token:token,
@@ -92,6 +92,27 @@ router.post("/account/signin", async function (req, res, next) {
     /* db와 연동해 계정 확인 */
     return res;
 
+});
+
+router.get("/account/logout", function (req, res, next) {
+    _.go(
+        req.session.destroy(()=>req.session),
+        ()=>res.json({
+            response: {
+                result: true
+            }
+        }),
+        _.catch((err) => {
+            console.log(err);
+            res.json({
+                response: {
+                    result: false,
+                    error:"로그아웃에 실패했습니다"
+                }
+            });
+        })
+    );
+    return res;
 });
 router.get("/account/getinfo", function (req, res, next) {
     req.session.loginInfo?res.json({
@@ -123,7 +144,7 @@ router.post("/account/signup", function (req, res, next) {
                 _.stop();
             })(connect),
         (connect) => {
-            const token = bcrypt.hashSync(id + Date.now()).replace(/\//g,"");
+            const token = bcrypt.hashSync(id + Date.now()).replace(/\/|\./g,"");
             connect.query("insert into userinfo (id, password, email) values(?, ?, ?)", [id, encrypt(password), email]);
             connect.query("insert into logged (token, uid) values(?, ?)", [token, id]);
             req.session.loginInfo = {

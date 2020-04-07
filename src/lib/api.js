@@ -5,6 +5,7 @@ export const nextBoard = () => axios.get("/api/next");
 export const prevBoard = () => axios.get("/api/prev");
 export const search = () => axios.get("/api/search");
 export const checkLogin = () => axios.get("/api/account/getinfo");
+export const logout = () => axios.get("/api/account/logout");
 export const signin = (id,password) => axios.post("/api/account/signin",{
     request:{
         data:{
@@ -22,12 +23,6 @@ export const signup = (id,password,check,email) => axios.post("/api/account/sign
             check,
             email
         }
-    }
-});
-
-export const logout = (token) => axios.post("/api/account/logout", {
-    request:{
-        token
     }
 });
 
