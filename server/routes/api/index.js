@@ -9,7 +9,8 @@ const pool = mysql.createPool({
     host: "localhost",
     user: "root",
     password: "1234",
-    database: "blog"
+    database: "blog",
+    dateStrings: "date"
 });
 const encrypt = (value) => {
     return crypto.createHash("sha256")
@@ -198,6 +199,55 @@ router.post("/post/insert", async function(req, res, next){
     );
     return res;
 });
+router.get("/post/:num", async function(req, res, next){
+    _.go(
+        _.mr(req.params.num,pool.getConnection(async conn => conn)),
+        (data,connect)=> 
+            data?((connect)=>_.mr(connect.query("select * from post where num = ?",[data]),connect))(connect)
+                :((connect)=>{
+                    connect.release();
+                    res.json({
+                        response:{
+                            result: false,
+                            error: "존재하지 않는 게시글입니다"
+                        }
+                    });
+                    return _.stop();
+                })(connect),
+        ([row],connect) => {
+            connect.release();
+            !_.isEmpty(row)?res.json({
+                response:{
+                    result: true,
+                    data:{
+                        title:row[0].title,
+                        num:row[0].board_num,
+                        bnum:row[0].num,
+                        board:row[0].board,
+                        content:row[0].content,
+                        hit:row[0].hits,
+                        insert:row[0].insert_date,
+                        update:row[0].update_date
+                    }
+                }
+            }):res.json({
+                response:{
+                    result: false
+                }
+            });
+        },
+        _.catch(error=>{
+            console.log(error);
+            res.json({
+                response:{
+                    result:false,
+                    error: "로그인에 실패했습니다"
+                }
+            });
+        })
+    );
+    return res;
+});
 router.post("/post/update", async function(req, res, next){
     return res;
 });
@@ -220,17 +270,18 @@ router.get("/board/:bnum/:num", async function(req, res, next){
             connect.release();
             return row[0];
         })(connect),
-        _.map((item,index)=>{
+        (item)=>{
             return {
-                num:index,
+                num:item.num,
                 title:item.title,
-                orderNo:item.num,
+                bnum:item.board_num,
+                content:item.content,
                 board:item.board,
                 hit:item.hits,
                 insert:item.insert_date,
                 update:item.update_date
             };
-        }),
+        },
         (data) => res.json({
             response:{
                 result: true,
@@ -258,9 +309,9 @@ router.get("/board/:bnum", async function(req, res, next){
         })(connect),
         _.map((item,index)=>{
             return {
-                num:index,
+                num:item.num,
                 title:item.title,
-                orderNo:item.num,
+                bnum:item.board_num,
                 board:item.board,
                 hit:item.hits,
                 insert:item.insert_date,
@@ -304,7 +355,6 @@ router.get("/account/logout", function (req, res, next) {
     return res;
 });
 router.get("/account/getinfo", function (req, res, next) {
-    console.log("test");
     req.session.loginInfo?res.json({
         response: {
             result: true,

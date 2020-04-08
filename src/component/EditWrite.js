@@ -2,7 +2,7 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-import {getBoards, insertPost} from "../lib/api";
+import {getBoards, insertPost, updatePost, getPost} from "../lib/api";
 import {Line} from "react-chartjs-2";
 import "draft-js/dist/Draft.css";
 import { List, Map, fromJS } from "immutable";
@@ -12,7 +12,7 @@ import styles from "../App.css";
 import EditorController from "./EditorController";
 import _ from "partial-js";
 import cx from "classnames";
-import {Editor, EditorState, RichUtils, ContentState, convertToRaw} from "draft-js";
+import {Editor, EditorState, RichUtils, ContentState, convertToRaw, convertFromRaw} from "draft-js";
 
 class EditWrite extends Component {
     constructor(props) {
@@ -25,7 +25,7 @@ class EditWrite extends Component {
                 board:List(),
                 title:"",
                 hasFocus: false,
-                editorState: EditorState.createWithContent(ContentState.createFromText("test"))
+                editorState: EditorState.createWithContent(ContentState.createFromText(""))
             };
         }
         else{
@@ -43,6 +43,34 @@ class EditWrite extends Component {
         this.toggleInlineStyle = (style) => this._toggleInlineStyle(style);
     }
     componentDidMount(){
+        this.state.mode?(()=>{
+            this.setBoards();
+            _.go(
+                
+                getPost(this.props.match.params.num),
+                (res) => {
+                    const {response} = res.data;
+                    console.log(
+                        response
+                    );
+                    return response.data?response.data:_.stop();
+                },
+                (data) => {
+                    const contentState = convertFromRaw(JSON.parse(data.content));
+                    console.log(data);
+                    this.setState({
+                        title:data.title,
+                        select:this.state.select.set("num",data.bnum).set("title",data.board),
+                        editorState:EditorState.createWithContent(contentState)
+                    });
+                },
+                _.catch(error=>{
+                    console.log(error);
+                })
+            );
+        })():this.setBoards();
+    }
+    setBoards = () => {
         _.go(
             getBoards(),
             (res) => {
@@ -90,14 +118,22 @@ class EditWrite extends Component {
         const {match} = this.props;
         const {select, title, editorState} = this.state;
         const content = editorState.getCurrentContent();
-        _.go(
-            insertPost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
+        this.state.mode?_.go(
+            updatePost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
             (res) => {
                 const {response} = res.data;
                 return response.data;
             },
             _.catch(error=>{console.log(error);})
-        );
+        ):
+            _.go(
+                insertPost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
+                (res) => {
+                    const {response} = res.data;
+                    return response.data;
+                },
+                _.catch(error=>{console.log(error);})
+            );
     }
     render(){
         const {handleTitleChange, handleChangeSelectBox, handleSubmit} = this;

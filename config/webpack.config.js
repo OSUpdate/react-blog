@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 var path = require("path");
 // eslint-disable-next-line no-unused-vars
+var webpack = require("webpack");
 // eslint-disable-next-line no-unused-vars
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var autoprefixer = require ("autoprefixer");
@@ -66,7 +67,7 @@ module.exports = {
                 {},
                 {
                     inject: true,
-                    template: "./public/index.html",
+                    template: path.resolve(__dirname, "../public/index.html"),
                 },
             )
         )
@@ -82,7 +83,7 @@ module.exports = {
                     {
                         loader: require.resolve("css-loader"),
                         options: {
-                            importLoaders: 2,
+                            importLoaders: 1,
                             modules: {
                                 localIdentName: "[path][name]__[local]--[hash:base64:5]",
                             

@@ -50,6 +50,8 @@ export const developInit = (token) => axios.post("/api/develop/init",{
     }
 });
 
+export const getPost = (num) => axios.get(`/api/post/${num}`);
+export const getReadPost = (bnum, num) => axios.get(`/api/board/${bnum}/${num}`);
 export const insertPost = (token,board,board_num,title,content) => axios.post("/api/post/insert",{
     request:{
         token,
@@ -62,11 +64,12 @@ export const insertPost = (token,board,board_num,title,content) => axios.post("/
     }
 });
 
-export const updatePost = (token,num,title,content) => axios.post("/api/post/update",{
+export const updatePost = (token,board,board_num,title,content) => axios.post("/api/post/update",{
     request:{
         token,
         data:{
-            num,
+            board,
+            board_num,
             title,
             content
         }
