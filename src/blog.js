@@ -8,7 +8,6 @@ import {
     Index,
     Sign,
     Edit,
-    Register,
     NotFound
 } from "./page/index.async.js";
 const store = configure();

@@ -20,9 +20,9 @@ const MENU_TOGGLE = "develop/MENU_TOGGLE";
 
 export const init = createAction(INIT, api.init);
 
-export const erase = createAction(ERASE, api.erase);
-export const update = createAction(UPDATE, api.update);
-export const insert = createAction(INSERT, api.insert);
+export const erase = createAction(ERASE);
+export const update = createAction(UPDATE);
+export const insert = createAction(INSERT);
 
 export const newBoard = createAction(NEW_BOARD,api.newBoard);
 export const updateBoard = createAction(UPDATE_BOARD,api.updateBoard);

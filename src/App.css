@@ -595,39 +595,50 @@ justify-content: center!important;
   font-size: 18px;
   padding: 20px 40px;
 }
-.btn_xl:hover,
-.btn_xl:focus,
-.btn_xl:active,
-.btn_xl.active,
-.dropdown-toggle.btn_xl {
+.btn_l {
+  color: white;
+  background-color: var(--main-button-color);
+  border-color: var(--main-button-color);
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+  font-weight: 500;
+  border-radius: 3px;
+  font-size: 15px;
+  padding: 10px 20px;
+}
+.btn_xl:hover, .btn_l:hover,
+.btn_xl:focus, .btn_l:focus,
+.btn_xl:active, .btn_l:active,
+.btn_xl.active, .btn_l.active,
+.dropdown-toggle.btn_xl, .dropdown-toggle.btn_l  {
   color: white;
   background-color: var(--main-button-color);
   border-color: var(--main-button-color);
 }
-.btn_xl:active,
-.btn_xl.active,
-.open .dropdown-toggle.btn_xl {
+.btn_xl:active, .btn_l:active,
+.open .dropdown-toggle.btn_xl,
+.open .dropdown-toggle.btn_l {
   background-image: none;
 }
-.btn_xl.disabled,
-.btn_xl[disabled],
-fieldset[disabled] .btn_xl,
-.btn_xl.disabled:hover,
-.btn_xl[disabled]:hover,
-fieldset[disabled] .btn_xl:hover,
-.btn_xl.disabled:focus,
-.btn_xl[disabled]:focus,
-fieldset[disabled] .btn_xl:focus,
-.btn_xl.disabled:active,
-.btn_xl[disabled]:active,
-fieldset[disabled] .btn_xl:active,
-.btn_xl.disabled.active,
-.btn_xl[disabled].active,
-fieldset[disabled] .btn_xl.active {
+.btn_xl.disabled,.btn_l.disabled,
+.btn_xl[disabled], .btn_l[disabled],
+fieldset[disabled] .btn_xl,fieldset[disabled] .btn_l,
+.btn_xl.disabled:hover, .btn_l.disabled:hover,
+.btn_xl[disabled]:hover, .btn_l[disabled]:hover,
+fieldset[disabled] .btn_xl:hover, fieldset[disabled] .btn_l:hover,
+.btn_xl.disabled:focus, .btn_l.disabled:focus,
+.btn_xl[disabled]:focus, .btn_l[disabled]:focus,
+fieldset[disabled] .btn_xl:focus, fieldset[disabled] .btn_l:focus,
+.btn_xl.disabled:active, .btn_l.disabled:active,
+.btn_xl[disabled]:active, .btn_l[disabled]:active,
+fieldset[disabled] .btn_xl:active, fieldset[disabled] .btn_l:active,
+.btn_xl.disabled.active, .btn_l.disabled.active,
+.btn_xl[disabled].active,  .btn_l[disabled].active, 
+fieldset[disabled] .btn_xl.active, fieldset[disabled] .btn_l.active {
   background-color: var(--main-button-color);
   border-color: var(--main-button-color);
 }
-.btn_xl {
+.btn_xl, .btn_l {
   color: var(--main-button-color);
   background-color: white;
 }
@@ -662,6 +673,13 @@ fieldset[disabled] .btn_xl.active {
 }
 input{
   font-size: 0.9em;
+}
+.read_container button {
+  text-align: right;
+  margin-top:20px;
+}
+.right{
+  text-align: right;
 }
 .item_buttons{
   display: contents;

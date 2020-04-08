@@ -121,9 +121,9 @@ class EditContainer extends Component {
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="#" className={styles.menu_item}>
+                                                    <Link to={`/edit/${match.params.token}/write`} className={styles.menu_item}>
                                                         <span className={styles.side_title}>글쓰기</span>
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                                 <li></li>
                                                 <li></li>

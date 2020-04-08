@@ -21,10 +21,8 @@ class EditBoard extends Component {
         };
     }
     componentDidMount(){
-        const {match} = this.props;
         _.go(
-            match.params.token,
-            (token) => getBoards(token),
+            getBoards(),
             (res) => {
                 const {response} = res.data;
                 return response.data;

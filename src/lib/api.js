@@ -6,13 +6,7 @@ export const prevBoard = () => axios.get("/api/prev");
 export const search = () => axios.get("/api/search");
 export const checkLogin = () => axios.get("/api/account/getinfo");
 export const logout = () => axios.get("/api/account/logout");
-export const getBoards = (token) => axios.post("/api/board/get",{
-    request:{
-        data:{
-            token
-        }
-    }
-});
+export const getBoards = () => axios.get("/api/board/get");
 export const insertBoard = (token, title) => axios.post("/api/board/insert",{
     request:{
         data:{
@@ -56,17 +50,19 @@ export const developInit = (token) => axios.post("/api/develop/init",{
     }
 });
 
-export const insert = (token,title,content) => axios.post("/api/develop/insert",{
+export const insertPost = (token,board,board_num,title,content) => axios.post("/api/post/insert",{
     request:{
         token,
         data:{
+            board,
+            board_num,
             title,
             content
         }
     }
 });
 
-export const update = (token,num,title,content) => axios.post("/api/develop/update",{
+export const updatePost = (token,num,title,content) => axios.post("/api/post/update",{
     request:{
         token,
         data:{
@@ -77,7 +73,7 @@ export const update = (token,num,title,content) => axios.post("/api/develop/upda
     }
 });
 
-export const erase = (token,num) => axios.post("/api/develop/delete",{
+export const deletePost = (token,num) => axios.post("/api/post/delete",{
     request:{
         token,
         data:{

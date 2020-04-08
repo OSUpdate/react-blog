@@ -6,7 +6,6 @@ const EditBoardList = ({boards, onChange, onClick, onDelete}) => {
     const boardList = boards.map(
         (item, index) => {
             // 데이터 추출
-            console.log(item);
             const { title, update, num } = item.toJS();
             return(
                 <EditBoardItem

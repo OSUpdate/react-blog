@@ -16,107 +16,23 @@ const encrypt = (value) => {
         .update(value)
         .digest("hex");
 };
-const auth = (req,session) => {
-    return req === session;
-};
-
-// /api/insert 경로 라우터 연결
-router.post("/insert", function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    return res.json({
-        Response: {
-            result: true,
-        }
-    });
-
-});
-
-// /api/delete 경로 라우터 연결
-router.post("/delete", function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    return res.json({
-        Response: {
-            result: true,
-        }
-    });
-
-});
-// /api/update 경로 라우터 연결
-router.post("/update", function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    return res.json({
-        Response: {
-            result: true,
-        }
-    });
-    
-
-});
-router.post("/board/update", async function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    const {token, orderNo, title} = req.body.request.data;
+router.get("/board/get", function(req, res, next){
     _.go(
-        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
-        (check, connect) => check?connect.query("update board set board_name = ? where orderNo = ?",[title,orderNo]):(()=>{
-            res.json({
-                response:{
-                    result: false,
-                }
-            });
-            return _.stop();
-        })(),
-        () => res.json({
-            response:{
-                result: true
-            }
-        }),
-        _.catch(error=>console.log(error))
-    );
-    return res;
-    
-
-});
-router.post("/board/insert", async function (req, res, next) {
-    /* db와 연동해 계정 확인 */
-    const {token, title} = req.body.request.data;
-    _.go(
-        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
-        (check, connect) => check?connect.query("insert into board set ?",{board_name:title}):(()=>{
-            res.json({
-                response:{
-                    result: false,
-                }
-            });
-            return _.stop();
-        })(),
-        (row) => {
-            console.log(row);
-            res.json({
-                response:{
-                    result: true
-                }
-            });
-        },
-        _.catch(error=>console.log(error))
-    );
-    return res;
-    
-
-});
-// /api/board/get 경로 라우터 연결
-router.post("/board/get", async function(req, res, next){
-    const {token} = req.body.request.data;
-    _.go(
-        _.mr(auth(token,req.session.loginInfo.token),pool.getConnection(async conn => conn)),
-        (check, connect) => check?connect.query("select board_name,orderNo from board order by orderNo"):(()=>{
-            res.json({
-                response:{
-                    result: false,
-                }
-            });
-            return _.stop();
-        })(),
-        (row) =>row[0],
+        pool.getConnection(async conn => conn),
+        (connect) => _.mr(connect.query("select board_name,orderNo from board order by orderNo"),connect),
+        ([row],connect) => !_.isEmpty(row)?
+            ((connect)=>{
+                connect.release();
+                return row;
+            })(connect):(()=>{
+                connect.release();
+                res.json({
+                    response:{
+                        result: false
+                    }
+                });
+                return _.stop();
+            })(),
         _.map((item,index)=>{
             return {
                 num:index,
@@ -135,33 +51,101 @@ router.post("/board/get", async function(req, res, next){
     );
     return res;
 });
-router.post("/account/signin", async function (req, res, next) {
-    const {id, password} = req.body.request.data;
+router.post("/board/update", async function (req, res, next) {
+    /* db와 연동해 계정 확인 */
     _.go(
-        pool.getConnection(async conn => conn),
-        (connect) => _.isEmpty(connect.query("select * from userinfo where id = ? and password = ?",[id, encrypt(password)])[0])?
-            connect:(function(connect){
+        _.mr(_.pick(req.body.request.data, ["token","orderNo","title"]),pool.getConnection(async conn => conn)),
+        (data, connect) => data?((connect)=>_.mr(connect.query("update board set board_name = ? where orderNo = ?",[data.title,data.orderNo]),connect))(connect):(()=>{
+            res.json({
+                response:{
+                    result: false,
+                }
+            });
+            return _.stop();
+        })(),
+        (row,connect) => {
+            connect.release();
+            row?res.json({
+                response:{
+                    result: true
+                }
+            }):res.json({
+                response:{
+                    result: false
+                }
+            });
+        },
+        _.catch(error=>console.log(error))
+    );
+    return res;
+    
+
+});
+router.post("/board/insert", async function (req, res, next) {
+    /* db와 연동해 계정 확인 */
+    _.go(
+        _.mr(_.pick(req.body.request.data, ["token","title"]),pool.getConnection(async conn => conn)),
+        (data,connect)=>
+            data?((connect)=>_.mr(connect.query("insert into board set ?",{board_name:data.title}),connect))(connect):((connect)=>{
                 connect.release();
                 res.json({
                     response:{
                         result: false,
-                        error: "아이디와 비밀번호를 확인해주세요"
                     }
                 });
-                _.stop();
+                return _.stop();
             })(connect),
-        (connect) => {
-            const token = bcrypt.hashSync(id + Date.now()).replace(/\/|\./g,"");
-            connect.query("update logged set token = ? where uid = ?", [token, id]);
+        (row,connect) => {
+            connect.release();
+            row?res.json({
+                response:{
+                    result: true
+                }
+            }):
+                res.json({
+                    response:{
+                        result: false
+                    }
+                });
+        },
+        _.catch(error=>console.log(error))
+    );
+    return res;
+    
+
+});
+router.post("/account/signin", async function (req, res, next) {
+    _.go(
+        _.mr(_.pick(req.body.request.data, ["id","password"]),pool.getConnection(async conn => conn)),
+        (data,connect)=> 
+            data?((connect)=>_.mr(data,connect.query("select * from userinfo where id = ? and password = ?",[data.id, encrypt(data.password)]),connect))(connect)
+                :((connect)=>{
+                    connect.release();
+                    res.json({
+                        response:{
+                            result: false,
+                            error: "아이디와 비밀번호를 확인해주세요"
+                        }
+                    });
+                    return _.stop();
+                })(connect),
+        (data,[row],connect) => {
+            const token = bcrypt.hashSync(data.id + Date.now()).replace(/\/|\./g,"");
+            connect.query("update logged set token = ? where uid = ?", [token, data.id]);
             req.session.loginInfo = {
                 token:token,
-                id: id
+                id: data.id
             };
             connect.release();
-            res.json({
+            //console.log(data,"data",row,"row");
+            !_.isEmpty(row)?res.json({
                 response:{
                     result: true,
                     token: token
+                }
+            }):res.json({
+                response:{
+                    result: false
                 }
             });
         },
@@ -178,6 +162,125 @@ router.post("/account/signin", async function (req, res, next) {
     /* db와 연동해 계정 확인 */
     return res;
 
+});
+router.post("/post/insert", async function(req, res, next){
+    _.go(
+        _.mr(_.pick(req.body.request.data, ["token","title","content","board_num","board"]),pool.getConnection(async conn => conn)),
+        (data,connect)=>
+            data?((connect)=>_.mr(connect.query("insert into post set insert_date = now(), ?",{
+                title:data.title,
+                board:data.board,
+                board_num:data.board_num,
+                content:data.content,
+            }),connect))(connect):((connect)=>{
+                connect.release();
+                res.json({
+                    response:{
+                        result: false,
+                    }
+                });
+                return _.stop();
+            })(connect),
+        (row,connect) => {
+            connect.release();
+            row?res.json({
+                response:{
+                    result: true
+                }
+            }):
+                res.json({
+                    response:{
+                        result: false
+                    }
+                });
+        },
+        _.catch(error=>console.log(error))
+    );
+    return res;
+});
+router.post("/post/update", async function(req, res, next){
+    return res;
+});
+router.post("/post/delete", async function(req, res, next){
+    return res;
+});
+router.get("/board/:bnum/:num", async function(req, res, next){
+    _.go(
+        pool.getConnection(async conn => conn),
+        (connect) => _.mr(connect.query("select * from post where board_num = ? and num = ? order by num",[req.params.bnum, req.params.num]),connect),
+        ([row],connect) =>_.isEmpty(row)?((connect)=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: false
+                }
+            });
+            return _.stop();
+        })(connect):((connect)=>{
+            connect.release();
+            return row[0];
+        })(connect),
+        _.map((item,index)=>{
+            return {
+                num:index,
+                title:item.title,
+                orderNo:item.num,
+                board:item.board,
+                hit:item.hits,
+                insert:item.insert_date,
+                update:item.update_date
+            };
+        }),
+        (data) => res.json({
+            response:{
+                result: true,
+                data:data
+            }
+        })
+    );
+    return res;
+});
+router.get("/board/:bnum", async function(req, res, next){
+    _.go(
+        pool.getConnection(async conn => conn),
+        (connect) => _.mr(connect.query("select num,title,board,hits,insert_date,update_date from post where board_num = ? order by num",[req.params.bnum]),connect),
+        ([row],connect) =>_.isEmpty(row)?((connect)=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: false
+                }
+            });
+            return _.stop();
+        })(connect):((connect)=>{
+            connect.release();
+            return row;
+        })(connect),
+        _.map((item,index)=>{
+            return {
+                num:index,
+                title:item.title,
+                orderNo:item.num,
+                board:item.board,
+                hit:item.hits,
+                insert:item.insert_date,
+                update:item.update_date
+            };
+        }),
+        (data) => res.json({
+            response:{
+                result: true,
+                data:data
+            }
+        })
+    );
+    return res;
+});
+router.get("/board/test",(req, res, next)=>{
+    console.log("/board/test");
+    res.json({
+        result:true
+    });
 });
 
 router.get("/account/logout", function (req, res, next) {
@@ -201,6 +304,7 @@ router.get("/account/logout", function (req, res, next) {
     return res;
 });
 router.get("/account/getinfo", function (req, res, next) {
+    console.log("test");
     req.session.loginInfo?res.json({
         response: {
             result: true,
@@ -215,34 +319,38 @@ router.get("/account/getinfo", function (req, res, next) {
 });
 
 router.post("/account/signup", async function (req, res, next) {
-    const {id, password, check, email} = req.body.request.data;
 
     _.go(
-        pool.getConnection(async conn => conn),
-        (connect) => _.isEmpty(connect.query("select * from userinfo where id = ? or email = ?",[id, email])[0])?
-            connect:(function(connect){
+        _.mr(_.pick(req.body.request.data, ["id","password","check","email"]),pool.getConnection(async conn => conn)),
+        (data,connect)=> 
+            data?((connect)=>_.mr(data,connect.query("select * from userinfo where id = ? or email = ?",[data.id, data.email]),connect))(connect):((connect)=>{
                 connect.release();
                 res.json({
                     response:{
                         result: false,
-                        error: "이미 존재하는 계정입니다"
+                        error:"이미 존재하는 계정입니다"
                     }
                 });
-                _.stop();
+                return _.stop();
             })(connect),
-        (connect) => {
-            const token = bcrypt.hashSync(id + Date.now()).replace(/\/|\./g,"");
-            connect.query("insert into userinfo (id, password, email) values(?, ?, ?)", [id, encrypt(password), email]);
-            connect.query("insert into logged (token, uid) values(?, ?)", [token, id]);
+        (data,[row],connect) => {
+            const token = bcrypt.hashSync(data.id + Date.now()).replace(/\/|\./g,"");
+            connect.query("insert into userinfo (id, password, email) values(?, ?, ?)", [data.id, encrypt(data.password), data.email]);
+            connect.query("insert into logged (token, uid) values(?, ?)", [token, data.id]);
             req.session.loginInfo = {
                 token:token,
-                id: id
+                id: data.id
             };
             connect.release();
-            res.json({
+            !_.isEmpty(row)?res.json({
                 response:{
                     result: true,
                     token: token
+                }
+            }):res.json({
+                response:{
+                    result: false,
+                    error: "회원가입에 실패했습니다"
                 }
             });
         },

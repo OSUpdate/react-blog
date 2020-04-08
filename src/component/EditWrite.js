@@ -2,16 +2,17 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
+import {getBoards, insertPost} from "../lib/api";
 import {Line} from "react-chartjs-2";
 import "draft-js/dist/Draft.css";
-
+import { List, Map, fromJS } from "immutable";
 import * as accountActions from "../modules/account";
 import "./style.css";
 import styles from "../App.css";
 import EditorController from "./EditorController";
-
+import _ from "partial-js";
 import cx from "classnames";
-import {Editor, EditorState, RichUtils, ContentState} from "draft-js";
+import {Editor, EditorState, RichUtils, ContentState, convertToRaw} from "draft-js";
 
 class EditWrite extends Component {
     constructor(props) {
@@ -20,6 +21,8 @@ class EditWrite extends Component {
         if(match.params.num){
             this.state = {
                 mode: true,
+                select:Map(),
+                board:List(),
                 title:"",
                 hasFocus: false,
                 editorState: EditorState.createWithContent(ContentState.createFromText("test"))
@@ -28,15 +31,30 @@ class EditWrite extends Component {
         else{
             this.state = {
                 mode: false,
+                select:Map(),
+                board:List(),
                 title:"",
                 hasFocus: false,
                 editorState: EditorState.createEmpty()
             };
         }
-        console.log(this.state.mode);
         this.onChange = editorState => this.setState({editorState});
         this.toggleBlockType = (type) => this._toggleBlockType(type);
         this.toggleInlineStyle = (style) => this._toggleInlineStyle(style);
+    }
+    componentDidMount(){
+        _.go(
+            getBoards(),
+            (res) => {
+                const {response} = res.data;
+                return response.data;
+            },
+            _.map(item=>Map(item)),
+            (list)=>this.setState({
+                board:List(list)
+            }),
+            _.catch(error=>{console.log(error);})
+        );
     }
     _toggleBlockType(blockType) {
         this.onChange(
@@ -54,6 +72,12 @@ class EditWrite extends Component {
             )
         );
     }
+    handleChangeSelectBox = (e) => {
+        const index = e.nativeEvent.target.selectedIndex;
+        this.setState({
+            select:this.state.select.set("num",e.target.value).set("title",e.nativeEvent.target[index].text)
+        });
+    }
     handleTitleChange = (e) =>{
         this.setState({
             title:e.target.value
@@ -62,15 +86,26 @@ class EditWrite extends Component {
     _onClick = () => {
         return (e) => this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, e.target.name));
     }
-    getPostData = () => {
-        /*
-        this.setState({
-            editorState:EditorState.createWithContent(ContentState.createFromText("test"))
-        });
-        */
+    handleSubmit = () => {
+        const {match} = this.props;
+        const {select, title, editorState} = this.state;
+        const content = editorState.getCurrentContent();
+        _.go(
+            insertPost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
+            (res) => {
+                const {response} = res.data;
+                return response.data;
+            },
+            _.catch(error=>{console.log(error);})
+        );
     }
     render(){
-        const {handleTitleChange} = this;
+        const {handleTitleChange, handleChangeSelectBox, handleSubmit} = this;
+        const {mode} = this.state;
+        const select = this.state.board.map((item,index)=>{
+            const {title,orderNo} = item.toJS();
+            return (<option key={index} value={orderNo}>{title}</option>);
+        });
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -80,10 +115,8 @@ class EditWrite extends Component {
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel_padding}>
                                         <div className={styles.path}>
-                                            <select>
-                                                <option disabled selected hidden>게시판을 선택해주세요</option>
-                                                <option>1</option>
-                                                <option>2</option>
+                                            <select value={this.state.select.get("num")} onChange={handleChangeSelectBox}>
+                                                {select}
                                             </select>
                                         </div>
                                     </div>
@@ -120,6 +153,9 @@ class EditWrite extends Component {
                                                     editorState={this.state.editorState} 
                                                     onChange={this.onChange} 
                                                 />
+                                            </div>
+                                            <div className={styles.right}>
+                                                <button className={styles.btn_l} onClick={handleSubmit}>완료</button>
                                             </div>
                                         </div>
                                     </div>

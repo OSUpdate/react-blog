@@ -14,6 +14,7 @@ create table userinfo(
 );
 create table post(
 	num INT not null AUTO_INCREMENT PRIMARY KEY,
+    board_num INT not null,
 	title varchar(30) not null,
     content varchar(2000) null,
 	board varchar(30) not null,
@@ -36,4 +37,5 @@ CREATE TABLE logged (
     PRIMARY KEY (`uid`)
 );
 insert into board (board_name,parent) values ("공지사항",null);
-insert into board (board_name,parent) values ("임시 게시",null);
+insert into board (board_name,parent) values ("임시 게시bn
+",null);
