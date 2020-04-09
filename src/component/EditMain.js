@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {Line} from "react-chartjs-2";
-
+import * as boardActions from "../modules/board";
 
 import * as accountActions from "../modules/account";
 import styles from "../App.css";
@@ -197,12 +197,9 @@ class EditMain extends Component {
 
 export default connect(
     (state) => ({
-        
-        signIn: state.account.get("signIn"),
-        token: state.account.get("token")
-        
+        board:state.board.get("board")
     }),
     (dispatch) => ({
-        AccountActions: bindActionCreators(accountActions, dispatch)
+        BoardActions: bindActionCreators(boardActions, dispatch)
     })  
 )(EditMain);

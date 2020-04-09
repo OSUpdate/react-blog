@@ -6,23 +6,33 @@ import {withRouter, Switch, Route, Link} from "react-router-dom";
 import {Line} from "react-chartjs-2";
 import {checkLogin, logout} from "../lib/api";
 import cx from "classnames";
-import * as developActions from "../modules/development";
+import * as boardActions from "../modules/board";
+import * as postActions from "../modules/post";
 import styles from "../App.css";
 import EditMain from "../component/EditMain";
 import EditPost from "../component/EditPost";
 import EditRead from "../component/EditRead";
 import EditWrite from "../component/EditWrite";
 import EditBoard from "../component/EditBoard";
+import { List, Map, fromJS} from "immutable";
 import _ from  "partial-js";
 
 class EditContainer extends Component {
     constructor(props){
         super(props);
         this.state = {
-            token:""
+            data:Map({
+                token:"",
+                menuBtn:Map({
+                    post:false,
+                    board:false
+                })
+            })
+            
         };
     }
     componentDidMount(){
+        const {BoardActions,PostActions} = this.props;
         const {history} = this.props;
         _.go(
             ()=>localStorage.getItem("userInfo")?JSON.parse(localStorage.getItem("userInfo")):history.push("/login"),
@@ -45,6 +55,8 @@ class EditContainer extends Component {
                 localStorage.removeItem("userInfo");
             })
         );
+        BoardActions.getBoard();
+        PostActions.getPosts(1);
     }
     handlePostClick = (e,num) => {
         const {history} = this.props;
@@ -52,8 +64,15 @@ class EditContainer extends Component {
         history.push(`/post/${num}`);
     }
     handleMenuClick = (btn) => {
-        const {DevelopActions} = this.props;
-        DevelopActions.menuToggle(btn);
+        const {data} = this.state;
+        const close = data.get("menuBtn").findKey((item)=>item == true);
+        btn !== close?
+            this.setState({
+                data:data.updateIn(["menuBtn",btn], item => !item).updateIn(["menuBtn",close],item=>!item)
+            }):
+            this.setState({
+                data:data.updateIn(["menuBtn",btn], item => !item)
+            });
     }
     handleLogout = async () => {
         const {history} = this.props;
@@ -69,8 +88,9 @@ class EditContainer extends Component {
         );
     }
     render(){
-        const {title, posts, index, menuBtn, match} = this.props;
+        const {title, posts, index, match} = this.props;
 
+        const menuBtn = this.state.data.get("menuBtn");
         const {
             handlePostClick,
             handleMenuClick,
@@ -116,9 +136,9 @@ class EditContainer extends Component {
                                         {btn.post?
                                             <ul className={styles.dash_menu}>
                                                 <li>
-                                                    <a href="#" className={styles.menu_item}>
+                                                    <Link to={`/edit/${match.params.token}/board`} className={styles.menu_item}>
                                                         <span className={styles.side_title}>모든 게시글</span>
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                                 <li>
                                                     <Link to={`/edit/${match.params.token}/write`} className={styles.menu_item}>
@@ -160,16 +180,11 @@ class EditContainer extends Component {
 export default connect(
     (state) => ({
         //현재 게시판 제목, 글 정보
-        current: state.develop.get("current"),
-
-        //현재 게시판의 페이지
-        page: state.develop.get("page"),
-        first: state.develop.get("first"),
-        end: state.develop.get("end"),
-        menuBtn: state.develop.get("menuBtn")
+        
 
     }),
     (dispatch) => ({
-        DevelopActions: bindActionCreators(developActions, dispatch)
+        BoardActions: bindActionCreators(boardActions, dispatch),
+        PostActions: bindActionCreators(postActions, dispatch)
     })  
 )(withRouter(EditContainer));

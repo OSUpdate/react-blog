@@ -1,6 +1,13 @@
 .DraftEditor-editorContainer,
 .public-DraftEditor-content {
-    padding-top:10px !important;
-    padding-left:20px !important;
+    padding-top:10px;
+    padding-left:20px;
     min-height: 500px;
+}
+.read_content{
+    margin-bottom: 50px;
+}
+.read_content > .DraftEditor-root > .DraftEditor-editorContainer,
+.read_content > .DraftEditor-root > .DraftEditor-editorContainer > .public-DraftEditor-content{
+  padding:0 !important;
 }

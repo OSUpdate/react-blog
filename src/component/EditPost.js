@@ -2,10 +2,11 @@ import React, {Component} from "react";
 
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-import {Line} from "react-chartjs-2";
-
+import {Link} from "react-router-dom";
+import { List, Map, fromJS } from "immutable";
 import EditPostList from "./EditPostList";
-import * as accountActions from "../modules/account";
+import * as boardActions from "../modules/board";
+import * as postActions from "../modules/post";
 import styles from "../App.css";
 import cx from "classnames";
 import _ from  "partial-js";
@@ -13,6 +14,15 @@ import _ from  "partial-js";
 class EditPost extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            data:Map({
+                list:List(),
+                activeDelete:false,
+                currentBoard:this.props.match.params.bname?this.props.match.params.bname:1
+            })
+            
+        };
+        /*
         this.state = {
             activeDelete:false,
             list:[
@@ -43,6 +53,38 @@ class EditPost extends Component {
                 }
             ]
         };
+        */
+    }
+    async componentDidUpdate(prevProps, prevState){
+        const {PostActions} = this.props;
+        if(prevProps.match.params.bname !== this.props.match.params.bname){
+            await PostActions.getPosts(this.props.match.params.bname);
+            this.setState({
+                data:this.state.data.set("currentBoard",this.props.match.params.bname).set("list",this.props.post)
+            });
+        }
+            
+        return;
+    }
+    componentDidMount(){
+        const {post} = this.props;
+        this.setState({
+            data:this.state.data.set("list",post)
+        });
+        /*
+        _.go(
+            getBoardPost(this.props.match.bname?this.props.match.bname:1),
+            (res) => {
+                const {response} = res.data;
+                return response.data;
+            },
+            _.map(item=>Map(item)),
+            (list)=>this.setState({
+                boards:List(list)
+            }),
+            _.catch(error=>{console.log(error);})
+        );
+        */
     }
     handleActiveButton = (list) => {
         return _.every(list,item => item.checked === false)?
@@ -56,44 +98,60 @@ class EditPost extends Component {
         return temp;
     }
     handleAllCheck = (e) => {
+        /*
+        const {PostActions} = this.props;
+        PostActions.allCheckToggle();
+        */
+        const {data} = this.state;
+        const arr = data.get("list").toJS();
         _.go(
-            _.mr(this.state.list,_.every(this.state.list,item=>item.checked === false)),
+            _.mr(arr,_.every(arr,item=>item.checked === false)),
             (list,checked) => checked?
-                _.map(list,item=>{
+                List(_.map(list,item=>{
                     item.checked=true;
-                    return item;
-                }):
-                _.every(this.state.list,item=>item.checked === true)?
-                    _.map(list,item=>{
+                    return Map(item);
+                })):
+                _.every(arr,item=>item.checked === true)?
+                    List(_.map(list,item=>{
                         item.checked=false;
-                        return item;
-                    }):
-                    _.map(list,item=>{
+                        return Map(item);
+                    })):
+                    List(_.map(list,item=>{
                         item.checked=true;
-                        return item;
-                    })
+                        return Map(item);
+                    }))
 
             ,
             (list) => this.setState({
-                list:list,
-                activeDelete:this.handleActiveButton(list)
+                data:data.set("list",list).set("activeDelete", this.handleActiveButton(list))
             })
         );
+        
     }
     handleChecked = (e)=>{
+        const {data} = this.state;
         this.setState({
-            list:_.map(this.state.list,item => {
+            data:data.set("list",List(_.map(data.get("list").toJS(),item => {
                 if(item.title === e.target.value)
                     item.checked = !item.checked;
-                return item;
-            }),
-            activeDelete:this.handleActiveButton(this.state.list)
+                return Map(item);
+            }))).set("activeDelete",this.handleActiveButton(data.get("list")))
+        });
+    }
+    
+    setBoard = () => {
+        const {match} = this.props;
+        return this.props.board.map((board,index)=>{
+            const {title,orderNo} = board.toJS();
+            return (<li key={index} className={styles.none_item} value={orderNo}><Link to={`/edit/${match.params.token}/board/${orderNo}`}>{title}</Link></li>);
         });
     }
     render(){
-        const {list,activeDelete} = this.state;
-        const {handleChecked,handleAllCheck, setPage} = this;
+        const {data} = this.state;
+        const {post} = this.props;
+        const {handleChecked,handleAllCheck, setPage, setBoard} = this;
         const pages = setPage(1,10,1);
+        const board = setBoard();
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -102,36 +160,10 @@ class EditPost extends Component {
                             <div className={cx(styles.col_lg_3, styles.col_md_3, styles.col_sm_3, styles.col_xs_12)}>
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel_padding}>
-                                        <div className={styles.none_panel_title}><h3>게시판 목록</h3></div>
+                                        <div className={styles.none_panel_title}><span>게시판 목록</span></div>
                                         <div className={styles.none_scroll_panel}>
                                             <ul className={styles.scroll_list}>
-                                                <li className={styles.none_item}>
-                                                테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.none_item}>
-                                            테스트
-                                                </li>
+                                                {board}
                                             </ul>
                                         </div>
                                     </div>
@@ -143,13 +175,13 @@ class EditPost extends Component {
                                         <div className={cx(styles.panel_title, styles.list_title)}>
                                             <span className={cx(styles.style_button, styles.hover)}>새로고침</span>
                                             <span className={cx(styles.style_button, styles.hover)} onClick={handleAllCheck}>전체선택</span>
-                                            <span className={activeDelete?cx(styles.style_button, styles.active_red):styles.style_button}>삭제</span>
+                                            <span className={data.get("activeDelete")?cx(styles.style_button, styles.active_red):styles.style_button}>삭제</span>
                                         </div>
                                         <div className={styles.none_scroll_panel}>
                                             <ul className={styles.scroll_list}>
                                                 
                                                 <EditPostList
-                                                    posts={list}
+                                                    posts={data.get("list")}
                                                     onChange={handleChecked}
                                                 />
                                             </ul>
@@ -172,11 +204,12 @@ class EditPost extends Component {
 
 export default connect(
     (state) => ({
-        //boards:state.edit.get("boards"),
-        //posts:state.edit.get("posts"),
-
+        board:state.board.get("board"),
+        post:state.post.get("post")
     }),
     (dispatch) => ({
-        //AccountActions: bindActionCreators(accountActions, dispatch)
+        PostActions: bindActionCreators(postActions, dispatch),
+        BoardActions: bindActionCreators(boardActions, dispatch),
+        
     })  
 )(EditPost);

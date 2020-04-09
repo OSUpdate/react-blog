@@ -49,7 +49,7 @@ export const developInit = (token) => axios.post("/api/develop/init",{
         token
     }
 });
-
+export const getBoardPost = (bnum) => axios.get(`/api/board/${bnum}`);
 export const getPost = (num) => axios.get(`/api/post/${num}`);
 export const getReadPost = (bnum, num) => axios.get(`/api/board/${bnum}/${num}`);
 export const insertPost = (token,board,board_num,title,content) => axios.post("/api/post/insert",{
@@ -95,7 +95,7 @@ export const newBoard = (token,title,parent) => axios.post("/api/develop/board/n
     }
 });
 
-export const deleteBoard = (token,title,parent) => axios.post("/api/develop/board/delete",{
+export const deleteBoard = (token,title,parent) => axios.post("/api/board/delete",{
     request:{
         token,
         data:{

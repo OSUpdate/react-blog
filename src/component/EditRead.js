@@ -82,7 +82,7 @@ class EditRead extends Component {
                                                 조회수 {hit} {time}
                                                 </div>
                                             </div>
-                                            <div className={styles.read_content}>
+                                            <div className={"read_content"}>
                                                 <Editor readOnly={true} editorState={editorState} />
                                             </div>
                                             <div className={styles.read_comment_list}>

@@ -295,7 +295,7 @@ div.toolbar button {
 .none_panel_title{
   
   margin-top:0;
-  padding:20px 20px 0 20px;
+  padding:20px 20px 20px 20px;
 }
 .none_panel_title h3{
   margin-top:0;
@@ -312,8 +312,12 @@ div.toolbar button {
   padding:0;
 }
 .none_item{
-  padding:15px 0 15px 20px;
   cursor: pointer;
+}
+.none_item a{
+  display: block;
+  padding: 15px 0 15px 20px;
+  color:#333;
 }
 .none_item:hover{
   background-color: var(--info-background-color);
@@ -680,6 +684,12 @@ input{
 }
 .right{
   text-align: right;
+}
+.none_panel_title span{
+  cursor: pointer;
+  margin-right: 16px;
+  padding: 2px 0;
+  display: inline-block;
 }
 .item_buttons{
   display: contents;

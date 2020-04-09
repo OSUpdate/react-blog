@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import {getBoards, updateBoard, insertBoard} from "../lib/api";
 import { List, Map, fromJS } from "immutable";
 import EditBoardList from "./EditBoardList";
-import * as accountActions from "../modules/account";
+import * as boardActions from "../modules/board";
 import styles from "../App.css";
 import cx from "classnames";
 import EditBoardItem from "./EditBoardItem";
@@ -21,6 +21,7 @@ class EditBoard extends Component {
         };
     }
     componentDidMount(){
+        /*
         _.go(
             getBoards(),
             (res) => {
@@ -33,31 +34,31 @@ class EditBoard extends Component {
             }),
             _.catch(error=>{console.log(error);})
         );
+        */
     }
     stateButton = (token, num, state, value) => {
-        console.log(value);
+        const { BoardActions, board } = this.props;
+        state === "수정"?BoardActions.modify(num):
+            state === "확인"?board.getIn([num,"new"])?(()=>{
+                BoardActions.insertBoard(token,value);
+                BoardActions.confirm(num);
+            })():((orderNo)=>{
+                BoardActions.updateBoard(token,orderNo,value);
+                BoardActions.modify(num);
+            })(board.getIn([num,"orderNo"])):"";
+        /*
         const modify = {
-            "수정":this.setState({
-                list:this.state.list.updateIn([num,"update"],update=>!update)
-            }),
-            "확인":this.state.list.getIn([num,"new"])?
-                _.go(
-                    _.mr(token,value),
-                    (token,value)=>insertBoard(token,value),
-                    (res) => res.data.result?this.setState({
-                        list:this.state.list.updateIn([num,"update"],update=>!update).updateIn([num,"new"],false)
-                    }):_.stop()
-                ):
-                _.go(
-                    _.mr(token,this.state.list.getIn([num,"orderNo"]),value),
-                    (token,orderNo,value)=>updateBoard(token,orderNo,value),
-                    (res) => res.data.result?this.setState({
-                        list:this.state.list.updateIn([num,"update"],update=>!update)
-                    }):_.stop()
-    
-                )
+            "수정":BoardActions.modify(num),
+            "확인":board.getIn([num,"new"])?(()=>{
+                BoardActions.insertBoard(token,value);
+                BoardActions.confirm(num);
+            })():((orderNo)=>{
+                BoardActions.updateBoard(token,orderNo,value);
+                BoardActions.modify(num);
+            })(board.getIn([num,"orderNo"]))
         };
         return modify[state];
+        */
     }
     handleActiveButton = (list) => {
         return _.every(list,item => item.checked === false)?
@@ -83,13 +84,17 @@ class EditBoard extends Component {
         });
     }
     handleChangeInput = (e, order) => {
+        const {BoardActions} = this.props;
+        BoardActions.updateTitle(order,e.target.value);
+        /*
         this.setState({
             list:this.state.list.setIn([order,"title"],e.target.value)
         });
+        */
     }
     handleConfirmInput = (e, num, state) => {
         const {match} = this.props;
-        this.stateButton(match.params.token,num,state,this.state.list.getIn([num,"title"]));
+        this.stateButton(match.params.token,num,state,this.props.board.getIn([num,"title"]));
     }
     handleDeleteItem = (e, num) => {
         _.removeByIndex(this.state.list,_.findIndex(this.state.list,(item)=>item.num === num));
@@ -99,7 +104,8 @@ class EditBoard extends Component {
 
     }
     render(){
-        const {list,activeDelete} = this.state;
+        const {activeDelete} = this.state;
+        const {board} = this.props;
         const {handleChecked,handleAddClick, handleChangeInput, handleConfirmInput, handleDeleteItem} = this;
         return(
             <div className={styles.container}>
@@ -117,7 +123,7 @@ class EditBoard extends Component {
                                             <ul className={styles.scroll_list}>
                                                 
                                                 <EditBoardList
-                                                    boards={list}
+                                                    boards={board}
                                                     onChange={handleChangeInput}
                                                     onClick={handleConfirmInput}
                                                     onDelete={handleDeleteItem}
@@ -134,15 +140,11 @@ class EditBoard extends Component {
         );
     }
 }
-EditBoard.defaultProps = {
-    activeDelete:false,
-    list:List()
-};
 export default connect(
     (state) => ({
-        
+        board:state.board.get("board")
     }),
     (dispatch) => ({
-        //AccountActions: bindActionCreators(accountActions, dispatch)
+        BoardActions: bindActionCreators(boardActions, dispatch)
     })  
 )(EditBoard);

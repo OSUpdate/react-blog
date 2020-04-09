@@ -1,15 +1,18 @@
 import React from "react";
-import ErrorInput from "./ErrorInput";
 import styles from "../App.css";
-import { List, Map } from "immutable";
+//import { format, setGlobalDateMasks } from "fecha";
 import cx from "classnames";
+/*
+setGlobalDateMasks({
+    myMask: 'HH:mm:ss YY/MM/DD';
+  });
+*/
 /* input 컴포넌트 리스트 */
 const EditPostList = ({posts, onChange}) => {
     const PostList = posts.map(
         (item, index) => {
             // 데이터 추출
-            console.log(item);
-            const { title,time,checked} = item;
+            const { title,insert,checked} = item.toJS();
             return(
                 <li className={cx(styles.scroll_item, styles.setH)} key={index}>
                     <div className={styles.post_item}>
@@ -22,7 +25,7 @@ const EditPostList = ({posts, onChange}) => {
                             <a>{title}</a>
                         </div>
                         <div className={styles.item_time}>
-                            <a>{time}</a>
+                            <a>{insert}</a>
                         </div>
                     </div>
                 </li>
