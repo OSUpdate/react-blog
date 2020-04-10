@@ -727,7 +727,7 @@ input{
 }
 .item_time{
   box-sizing: border-box;
-  flex:1;
+  flex:4;
   line-height: 1.7;
 }
 .item input[type="text"],
@@ -795,7 +795,7 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
   text-align: center;
   float:none;
 }
-.pg_wrap a:first-child, .pg_wrap a:last-child{
+.prev, .next{
   margin-left:10px;
   margin-right: 10px;
 }

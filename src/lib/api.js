@@ -49,7 +49,7 @@ export const developInit = (token) => axios.post("/api/develop/init",{
         token
     }
 });
-export const getBoardPost = (bnum) => axios.get(`/api/board/${bnum}`);
+export const getBoardPost = (bnum,page) => axios.get(`/api/board/${bnum}?page=${page}`);
 export const getPost = (num) => axios.get(`/api/post/${num}`);
 export const getReadPost = (bnum, num) => axios.get(`/api/board/${bnum}/${num}`);
 export const insertPost = (token,board,board_num,title,content) => axios.post("/api/post/insert",{

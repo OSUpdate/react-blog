@@ -16,11 +16,17 @@ class EditBoard extends Component {
         super(props);
         
         this.state = {
-            activeDelete:false,
-            list:List()
+            data:Map({
+                activeDelete:false,
+                list:List()
+            })
         };
     }
     componentDidMount(){
+        const {board} = this.props;
+        this.setState({
+            data:this.state.data.set("list",board)
+        });
         /*
         _.go(
             getBoards(),

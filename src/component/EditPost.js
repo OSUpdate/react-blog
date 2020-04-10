@@ -9,16 +9,27 @@ import * as boardActions from "../modules/board";
 import * as postActions from "../modules/post";
 import styles from "../App.css";
 import cx from "classnames";
+import queryString from "query-string";
 import _ from  "partial-js";
+
 
 class EditPost extends Component {
     constructor(props){
         super(props);
         this.state = {
             data:Map({
+                currentPage:1,
+                next:false,
+                prev:false,
+                per:10,
+                block:10,
+                totalBlock:1,
+                totalPage:1,
+                nowBlock:1,
+                total:1,
                 list:List(),
                 activeDelete:false,
-                currentBoard:this.props.match.params.bname?this.props.match.params.bname:1
+                currentBoard:1
             })
             
         };
@@ -57,19 +68,54 @@ class EditPost extends Component {
     }
     async componentDidUpdate(prevProps, prevState){
         const {PostActions} = this.props;
-        if(prevProps.match.params.bname !== this.props.match.params.bname){
-            await PostActions.getPosts(this.props.match.params.bname);
+        
+        if((prevProps.match.params.bname !== this.props.match.params.bname) || 
+            queryString.parse(this.props.location.search).page !== queryString.parse(prevProps.location.search).page){
+
+            const page = queryString.parse(this.props.location.search).page?queryString.parse(location.search).page:1;
+            const name = this.props.match.params.bname?this.props.match.params.bname:1;
+            await PostActions.getPosts(name,page);
+            const totalPage = Math.ceil(this.props.total/this.state.data.get("per"));
+            const totalBlock = Math.ceil(totalPage/this.state.data.get("block"));
+            const nowBlock = Math.ceil(page/this.state.data.get("block"));
+            const next = nowBlock < totalBlock?true:false;
+            const prev = nowBlock > 1?true:false;
+
             this.setState({
-                data:this.state.data.set("currentBoard",this.props.match.params.bname).set("list",this.props.post)
+                data:this.state.data.set("currentBoard",name)
+                    .set("list",this.props.post)
+                    .set("total", this.props.total)
+                    .set("totalPage",totalPage)
+                    .set("totalBlock",totalBlock)
+                    .set("nowBlock",nowBlock)
+                    .set("currentPage",page)
+                    .set("next",next)
+                    .set("prev",prev)
             });
         }
             
         return;
     }
-    componentDidMount(){
-        const {post} = this.props;
+    async componentDidMount(){
+        const {match,PostActions,location} = this.props;
+        const page = queryString.parse(location.search).page?queryString.parse(location.search).page:1;
+        const initBoard = match.params.bname?match.params.bname:1;
+        await PostActions.getPosts(initBoard,page);
+        const totalPage = Math.ceil(this.props.total/this.state.data.get("per"));
+        const totalBlock = Math.ceil(totalPage/this.state.data.get("block"));
+        const nowBlock = Math.ceil(page/this.state.data.get("block"));
+        const next = nowBlock < totalBlock?true:false;
+        const prev = nowBlock > 1?true:false;
         this.setState({
-            data:this.state.data.set("list",post)
+            data:this.state.data.set("currentBoard",this.props.match.params.bname)
+                .set("list",this.props.post)
+                .set("total", this.props.total)
+                .set("totalPage",totalPage)
+                .set("totalBlock",totalBlock)
+                .set("nowBlock",nowBlock)
+                .set("currentPage",page)
+                .set("next",next)
+                .set("prev",prev)
         });
         /*
         _.go(
@@ -87,14 +133,21 @@ class EditPost extends Component {
         */
     }
     handleActiveButton = (list) => {
-        return _.every(list,item => item.checked === false)?
-            false:true;
+        return _.every(list,item => item.checked === false)?false:true;
     }
-    setPage = (first, end, page) => {
+    setPage = () => {
+        const {data} = this.state;
+        const {match} = this.props;
         let temp = new Array();
-        for(let i = first; i<=end;i++){
-            temp.push(<a key={i} className={i==page?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</a>);
+        const start = (10*(data.get("nowBlock")-1)+1) <= 1?1:(10*(data.get("nowBlock")-1)+1);
+        const end = data.get("nowBlock")*data.get("block") >= data.get("totalPage")?data.get("totalPage"):data.get("nowBlock")*data.get("block");
+        const currentPage = queryString.parse(this.props.location.search).page?queryString.parse(this.props.location.search).page:1;
+        data.get("prev")?temp.push(<Link key={start-1} to={`/edit/${match.params.token}/board/${match.params.bname}?page=${start-1}`} className={styles.prev+" fas fa-chevron-left"}></Link>):"";
+        
+        for(let i = start; i<=end;i++){
+            temp.push(<Link to={`/edit/${match.params.token}/board/${match.params.bname}?page=${i}`} key={i} className={i===Number(currentPage)?cx(styles.pg_page, styles.current_page):styles.pg_page}>{i}</Link>);
         }
+        data.get("next")?temp.push(<Link key={end+1} to={`/edit/${match.params.token}/board/${match.params.bname}?page=${end+1}`} className={styles.next+" fas fa-chevron-right"}></Link>):"";
         return temp;
     }
     handleAllCheck = (e) => {
@@ -123,34 +176,35 @@ class EditPost extends Component {
 
             ,
             (list) => this.setState({
-                data:data.set("list",list).set("activeDelete", this.handleActiveButton(list))
+                data:data.set("list",list).set("activeDelete", this.handleActiveButton(list.toJS()))
             })
         );
         
     }
-    handleChecked = (e)=>{
+    handleChecked = (e, num)=>{
         const {data} = this.state;
+        const index = data.get("list").findIndex(item=>item.get("num")===num);
+        console.log();
+        let temp = data.updateIn(["list",index,"checked"], check=>!check).toJS();
+        temp.activeDelete = _.every(temp.list,item=>item.checked===false)?false:true;
         this.setState({
-            data:data.set("list",List(_.map(data.get("list").toJS(),item => {
-                if(item.title === e.target.value)
-                    item.checked = !item.checked;
-                return Map(item);
-            }))).set("activeDelete",this.handleActiveButton(data.get("list")))
+            data:fromJS(temp)
         });
+
     }
     
     setBoard = () => {
         const {match} = this.props;
         return this.props.board.map((board,index)=>{
             const {title,orderNo} = board.toJS();
-            return (<li key={index} className={styles.none_item} value={orderNo}><Link to={`/edit/${match.params.token}/board/${orderNo}`}>{title}</Link></li>);
+            return (<li key={index} className={styles.none_item} value={orderNo}><Link to={`/edit/${match.params.token}/board/${orderNo}?page=1`}>{title}</Link></li>);
         });
     }
     render(){
         const {data} = this.state;
         const {post} = this.props;
         const {handleChecked,handleAllCheck, setPage, setBoard} = this;
-        const pages = setPage(1,10,1);
+        const pages = setPage();
         const board = setBoard();
         return(
             <div className={styles.container}>
@@ -186,9 +240,9 @@ class EditPost extends Component {
                                                 />
                                             </ul>
                                             <nav className={styles.pg_wrap}>
-                                                <a className={"fas fa-chevron-left"}></a>
+                                                
                                                 {pages}
-                                                <a className={"fas fa-chevron-right"}></a>
+                                                
                                             </nav>
                                         </div>
                                     </div>
@@ -205,7 +259,8 @@ class EditPost extends Component {
 export default connect(
     (state) => ({
         board:state.board.get("board"),
-        post:state.post.get("post")
+        post:state.post.get("post"),
+        total:state.post.get("total")
     }),
     (dispatch) => ({
         PostActions: bindActionCreators(postActions, dispatch),

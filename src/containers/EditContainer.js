@@ -136,7 +136,7 @@ class EditContainer extends Component {
                                         {btn.post?
                                             <ul className={styles.dash_menu}>
                                                 <li>
-                                                    <Link to={`/edit/${match.params.token}/board`} className={styles.menu_item}>
+                                                    <Link to={`/edit/${match.params.token}/board/1`} className={styles.menu_item}>
                                                         <span className={styles.side_title}>모든 게시글</span>
                                                     </Link>
                                                 </li>

@@ -12,12 +12,12 @@ const EditPostList = ({posts, onChange}) => {
     const PostList = posts.map(
         (item, index) => {
             // 데이터 추출
-            const { title,insert,checked} = item.toJS();
+            const { title,num,insert,checked} = item.toJS();
             return(
                 <li className={cx(styles.scroll_item, styles.setH)} key={index}>
                     <div className={styles.post_item}>
                         <div className={styles.item_checkBox}>
-                            <input type="checkbox" id={index} className="checkbox" checked={checked} value={title} onChange={onChange} />
+                            <input type="checkbox" id={index} className="checkbox" checked={checked} value={title} onChange={(e)=>onChange(e,num)} />
                             <label className={checked?"fas fa-check":""} htmlFor={index}></label>
             
                         </div>

@@ -17,6 +17,27 @@ const encrypt = (value) => {
         .update(value)
         .digest("hex");
 };
+
+const per = 10;
+//페이지당 게시물 수
+/*
+const initData = {
+    per:10,
+
+};
+const init = (async () => {
+    const connect = await pool.getConnection(async conn => conn);
+    const [board] = await connect.query("select orderNo from board");
+    const num = await _.map(board[0],async item=>{
+        const [count] = await connect.query(`select count(*) from post where board_num = ${item}`);
+        console.log(`board num = ${item} total`,count[0]);
+        initData[item] = {
+            total:count[0]["count(*)"]
+        };
+    });
+    console.log(initData);
+})();
+*/
 router.get("/board/get", function(req, res, next){
     _.go(
         pool.getConnection(async conn => conn),
@@ -292,9 +313,11 @@ router.get("/board/:bnum/:num", async function(req, res, next){
     return res;
 });
 router.get("/board/:bnum", async function(req, res, next){
+    const page = req.query.page?req.query.page:1;
+    const start = (page-1)*per;
     _.go(
         pool.getConnection(async conn => conn),
-        (connect) => _.mr(connect.query("select num,title,board,hits,insert_date,update_date from post where board_num = ? order by num",[req.params.bnum]),connect),
+        (connect) => _.mr(connect.query("select num,title,board,hits,insert_date,update_date from post where board_num = ? order by num desc limit ?,?",[req.params.bnum, start, per]),connect),
         ([row],connect) =>_.isEmpty(row)?((connect)=>{
             connect.release();
             res.json({
@@ -305,25 +328,32 @@ router.get("/board/:bnum", async function(req, res, next){
             return _.stop();
         })(connect):((connect)=>{
             connect.release();
-            return row;
+            return _.mr(row,connect.query("select count(*) from post where board_num = ?",[req.params.bnum]));
         })(connect),
-        _.map((item,index)=>{
-            return {
-                num:item.num,
-                title:item.title,
-                bnum:item.board_num,
-                board:item.board,
-                hit:item.hits,
-                insert:item.insert_date,
-                update:item.update_date
-            };
-        }),
-        (data) => res.json({
-            response:{
-                result: true,
-                data:data
-            }
-        })
+        (arr,[row])=>{
+            return _.mr(_.map(arr,(item,index)=>{
+                return {
+                    num:item.num,
+                    title:item.title,
+                    bnum:item.board_num,
+                    board:item.board,
+                    hit:item.hits,
+                    insert:item.insert_date,
+                    update:item.update_date
+                };
+            }),row[0]["count(*)"]);
+        },
+        (data,total) => {
+            res.json({
+                response:{
+                    result: true,
+                    data:{
+                        post:data,
+                        total:total
+                    }
+                }
+            });
+        }
     );
     return res;
 });
