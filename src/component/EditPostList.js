@@ -2,17 +2,18 @@ import React from "react";
 import styles from "../App.css";
 //import { format, setGlobalDateMasks } from "fecha";
 import cx from "classnames";
+import {Link} from "react-router-dom";
 /*
 setGlobalDateMasks({
     myMask: 'HH:mm:ss YY/MM/DD';
   });
 */
 /* input 컴포넌트 리스트 */
-const EditPostList = ({posts, onChange}) => {
+const EditPostList = ({posts, onChange, token}) => {
     const PostList = posts.map(
         (item, index) => {
             // 데이터 추출
-            const { title,num,insert,checked} = item.toJS();
+            const { title,num,insert,checked,bnum} = item.toJS();
             return(
                 <li className={cx(styles.scroll_item, styles.setH)} key={index}>
                     <div className={styles.post_item}>
@@ -22,7 +23,7 @@ const EditPostList = ({posts, onChange}) => {
             
                         </div>
                         <div className={styles.item_title}>
-                            <a>{title}</a>
+                            <Link to={`/edit/${token}/board/${bnum}/${num}`}>{title}</Link>
                         </div>
                         <div className={styles.item_time}>
                             <a>{insert}</a>

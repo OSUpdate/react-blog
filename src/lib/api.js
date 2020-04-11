@@ -7,6 +7,7 @@ export const search = () => axios.get("/api/search");
 export const checkLogin = () => axios.get("/api/account/getinfo");
 export const logout = () => axios.get("/api/account/logout");
 export const getBoards = () => axios.get("/api/board/get");
+export const getAllPost = (page) => axios.get(`/api/post/get?page=${page}`);
 export const insertBoard = (token, title) => axios.post("/api/board/insert",{
     request:{
         data:{
@@ -76,11 +77,11 @@ export const updatePost = (token,board,board_num,title,content) => axios.post("/
     }
 });
 
-export const deletePost = (token,num) => axios.post("/api/post/delete",{
+export const deletePost = (token,list) => axios.post("/api/post/delete",{
     request:{
         token,
         data:{
-            num
+            list
         }
     }
 });

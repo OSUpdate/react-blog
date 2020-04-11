@@ -38,6 +38,50 @@ const init = (async () => {
     console.log(initData);
 })();
 */
+router.get("/post/get", function(req, res, next){
+    const page = req.query.page?req.query.page:1;
+    const start = (page-1)*per;
+    _.go(
+        pool.getConnection(async conn => conn),
+        (connect) => _.mr(connect.query("select * from post order by num desc limit ?,10",[start]),connect),
+        ([row],connect) => !_.isEmpty(row)?
+            ((connect)=>{
+                connect.release();
+                return _.mr(row,connect.query("select count(*) from post"));
+            })(connect):(()=>{
+                connect.release();
+                res.json({
+                    response:{
+                        result: false
+                    }
+                });
+                return _.stop();
+            })(),
+        (arr,[row])=> {
+            return _.mr(_.map(arr,(item,index)=>{
+                return {
+                    num:item.num,
+                    title:item.title,
+                    bnum:item.board_num,
+                    board:item.board,
+                    hit:item.hits,
+                    insert:item.insert_date,
+                    update:item.update_date
+                };
+            }),row[0]["count(*)"]);
+        },
+        (data,total) => res.json({
+            response:{
+                result: true,
+                data:{
+                    post:data,
+                    total:total
+                }
+            }
+        })
+    );
+    return res;
+});
 router.get("/board/get", function(req, res, next){
     _.go(
         pool.getConnection(async conn => conn),
@@ -273,12 +317,39 @@ router.post("/post/update", async function(req, res, next){
     return res;
 });
 router.post("/post/delete", async function(req, res, next){
+    console.log(req.body.request.data);
+    _.go(
+        _.mr(req.body.request.data.list,pool.getConnection(async conn => conn)),
+        (list,connect) =>{
+            const del = _.map(list,item=>{
+                return connect.query("delete from post where num = ? and board_num = ?",[item.num,item.bnum]);
+            });
+            return _.mr(del,connect);
+        },
+        (result,connect) => {
+            console.log(result);
+            result?(()=>{
+                res.json({
+                    response:{
+                        result: true
+                    }
+                });
+            })():(()=>{
+                connect.release();
+                res.json({
+                    response:{
+                        result: false
+                    }
+                });
+            })();
+        }
+    );
     return res;
 });
 router.get("/board/:bnum/:num", async function(req, res, next){
     _.go(
         pool.getConnection(async conn => conn),
-        (connect) => _.mr(connect.query("select * from post where board_num = ? and num = ? order by num",[req.params.bnum, req.params.num]),connect),
+        (connect) => _.mr(connect.query("select *,(select num from post where board_num = ? and num > ? order by num limit 1) as next,(select num from post where board_num = ? and num < ? order by num desc limit 1) as prev from post where board_num = ? and num = ? order by num",[req.params.bnum, req.params.num,req.params.bnum, req.params.num,req.params.bnum, req.params.num]),connect),
         ([row],connect) =>_.isEmpty(row)?((connect)=>{
             connect.release();
             res.json({
@@ -300,7 +371,9 @@ router.get("/board/:bnum/:num", async function(req, res, next){
                 board:item.board,
                 hit:item.hits,
                 insert:item.insert_date,
-                update:item.update_date
+                update:item.update_date,
+                next:item.next,
+                prev:item.prev
             };
         },
         (data) => res.json({
@@ -317,7 +390,7 @@ router.get("/board/:bnum", async function(req, res, next){
     const start = (page-1)*per;
     _.go(
         pool.getConnection(async conn => conn),
-        (connect) => _.mr(connect.query("select num,title,board,hits,insert_date,update_date from post where board_num = ? order by num desc limit ?,?",[req.params.bnum, start, per]),connect),
+        (connect) => _.mr(connect.query("select num,title,board,hits,insert_date,update_date,board_num from post where board_num = ? order by num desc limit ?,?",[req.params.bnum, start, per]),connect),
         ([row],connect) =>_.isEmpty(row)?((connect)=>{
             connect.release();
             res.json({

@@ -7,6 +7,7 @@ import { List, Map, fromJS } from "immutable";
 import EditPostList from "./EditPostList";
 import * as boardActions from "../modules/board";
 import * as postActions from "../modules/post";
+import {deletePost} from "../lib/api";
 import styles from "../App.css";
 import cx from "classnames";
 import queryString from "query-string";
@@ -66,6 +67,7 @@ class EditPost extends Component {
         };
         */
     }
+    
     async componentDidUpdate(prevProps, prevState){
         const {PostActions} = this.props;
         
@@ -192,7 +194,24 @@ class EditPost extends Component {
         });
 
     }
-    
+    handleDelete = (e) => {
+        const {data} = this.state;
+        const {PostActions, match, history} = this.props;
+        const arr = data.get("list").toJS();
+        _.go(
+            _.reduce(arr,(acc,item) => {
+                item.checked === true?acc.push(item):null;
+                return acc;
+            },[]),
+            _.map(item=>_.pick(item,["num", "bnum"])),
+            (list)=>deletePost(match.params.token,list),
+            (res) => {
+                console.log(res);
+                return res.data.response.result?window.location.reload():_.stop();
+            }
+        );
+
+    }
     setBoard = () => {
         const {match} = this.props;
         return this.props.board.map((board,index)=>{
@@ -202,8 +221,8 @@ class EditPost extends Component {
     }
     render(){
         const {data} = this.state;
-        const {post} = this.props;
-        const {handleChecked,handleAllCheck, setPage, setBoard} = this;
+        const {post,match} = this.props;
+        const {handleChecked,handleAllCheck, setPage, setBoard, handleDelete} = this;
         const pages = setPage();
         const board = setBoard();
         return(
@@ -227,9 +246,9 @@ class EditPost extends Component {
                                 <div className={cx(styles.board_card)}>
                                     <div className={styles.none_panel}>
                                         <div className={cx(styles.panel_title, styles.list_title)}>
-                                            <span className={cx(styles.style_button, styles.hover)}>새로고침</span>
+                                            <span className={cx(styles.style_button, styles.hover)} onClick={(e)=>window.location.reload()}>새로고침</span>
                                             <span className={cx(styles.style_button, styles.hover)} onClick={handleAllCheck}>전체선택</span>
-                                            <span className={data.get("activeDelete")?cx(styles.style_button, styles.active_red):styles.style_button}>삭제</span>
+                                            <span className={data.get("activeDelete")?cx(styles.style_button, styles.active_red):styles.style_button} onClick={data.get("activeDelete")?handleDelete:null}>삭제</span>
                                         </div>
                                         <div className={styles.none_scroll_panel}>
                                             <ul className={styles.scroll_list}>
@@ -237,6 +256,7 @@ class EditPost extends Component {
                                                 <EditPostList
                                                     posts={data.get("list")}
                                                     onChange={handleChecked}
+                                                    token={match.params.token}
                                                 />
                                             </ul>
                                             <nav className={styles.pg_wrap}>

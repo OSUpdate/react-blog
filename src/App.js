@@ -1,15 +1,34 @@
 import React, {Component} from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
-
-import * as viewActions from "./modules/view";
+import {Link} from "react-router-dom";
+import * as postActions from "./modules/post";
+import * as boardActions from "./modules/board";
 import styles from "./App.css";
 import PostContainer from "./containers/PostContainer";
 import ReadContainer from "./containers/ReadContainer";
 import { withRouter, Switch, Route } from "react-router-dom";
 import cx from "classnames";
+import _ from  "partial-js";
+
 class App extends Component {
+    componentDidMount(){
+        const {BoardActions,PostActions} = this.props;
+        BoardActions.getBoard();
+        PostActions.getPosts(1,1);
+    }
     render() {
+        const {board} = this.props;
+        const boards = _.map(board.toJS(),item=>{
+            const {title,orderNo} = item;
+            return (
+                <li >
+                    <Link to={`/board/${orderNo}`} className={styles.menu_item}>
+                        <span className={styles.side_title}>{title}</span>
+                    </Link>
+                </li>
+            );
+        });
         return(
             <div className={styles.App}>
                 <header id={styles.banner}>
@@ -30,30 +49,13 @@ class App extends Component {
             
                             <nav className={styles.menu}>
                                 <header>
-                                    <h3>전체 글</h3>
+                                    <Link to={"/board/all"}>
+                                        <h3>전체 글</h3>
+                                    </Link>
                                 </header>
                                 <ul>
-                                    <li >
-                                        <a className={styles.menu_item} href="#">
-                                            <span className={styles.side_title}>Menu</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a className={styles.menu_item}>
-                                            <span className={styles.side_title}>Sub Menu</span>
-                                            <span className={styles.opener + " fas fa-chevron-down"}></span>
-                                        </a>
-                                    </li>
-                                    <li >
-                                        <a className={styles.menu_item} href="#">
-                                            <span className={styles.side_title}>Menu</span>
-                                        </a>
-                                    </li>
-                                    <li >
-                                        <a className={styles.menu_item} href="#">
-                                            <span className={styles.side_title}>Menu</span>
-                                        </a>
-                                    </li>
+                                    {boards}
+                                    
                                 </ul>
                             </nav>
                         </div>
@@ -72,14 +74,11 @@ class App extends Component {
 }
 export default connect(
     (state) => ({
-        //게시판 이름 정보
-        menu: state.view.get("menu"),
-
-        //현재 게시판의 페이지
-        toggle:state.view.get("menu")
-
+        board:state.board.get("board"),
     }),
     (dispatch) => ({
-        ViewActions: bindActionCreators(viewActions, dispatch)
+        PostActions: bindActionCreators(postActions, dispatch),
+        BoardActions: bindActionCreators(boardActions, dispatch),
+        
     })  
 )(withRouter(App));

@@ -7,18 +7,22 @@ import _ from "partial-js";
 const GET_POST = "post/GET";
 const NEW_POST = "post/NEW_BOARD";
 const UPDATE_POST = "post/UPDATE_BOARD";
-const DELETE_POST = "post/DELETE_BOARD";
+const DELETE_POST = "post/DELETE_POST";
 const GET_BOARD_POST = "post/GET_POST";
+const GET_ALL_POST = "post/GET_ALL_POST";
 
 const CHECK_POST = "post/CHECK_POST";
 const ALL_CHECK_TOGGLE = "post/ALL_CHECK_TOGGLE";
+const CHANGE_LIST = "post/CHANGE_LIST";
 
 export const getPost = createAction(GET_POST, api.getReadPost);
 export const insertPost = createAction(NEW_POST,api.insertPost);
 export const updatePost = createAction(UPDATE_POST,api.updatePost);
 export const deletePost = createAction(DELETE_POST,api.deletePost);
 export const getPosts = createAction(GET_BOARD_POST, api.getBoardPost);
+export const getAllPost = createAction(GET_ALL_POST,api.getAllPost);
 
+export const changeList = createAction(CHANGE_LIST, list => list);
 export const checkPost = createAction(CHECK_POST, value=>value);
 export const allCheckToggle = createAction(ALL_CHECK_TOGGLE);
 
@@ -33,6 +37,9 @@ const initialState = Map({
 
 });
 const reducer = handleActions({
+    [CHANGE_LIST]:(state, {payload: data}) => {
+        return state.set("post",fromJS(data));
+    },
     [CHECK_POST]: (state, {payload: data}) => {
         const arr = state.get("post").toJS();
         
@@ -85,6 +92,27 @@ export default applyPenders(reducer,[
         // 통신이 성공일 경우 싱행 함수
         onSuccess: (state, action) => {
             const {data: res} = action.payload;  
+        },
+        // 에러가 발생한 경우 실행 함수
+        onError: (state, action) => {
+            const {data: res, status: status} = action.payload.response;
+        }
+    },
+    {
+        // 서버에 초기화 요청
+        type: GET_ALL_POST,
+        // 통신이 성공일 경우 싱행 함수
+        onSuccess: (state, action) => {
+            const {data: res} = action.payload;
+            console.log(res);
+            const arr = res.response.result?List(_.map(res.response.data.post,(item,index)=>{
+                console.log(item,"item");
+                return Map({
+                    ...item,
+                    checked:false
+                });
+            })):List();
+            return state.set("post",arr).set("total",res.response.data.total);
         },
         // 에러가 발생한 경우 실행 함수
         onError: (state, action) => {
@@ -156,10 +184,10 @@ export default applyPenders(reducer,[
     },
     {
         // 서버에 초기화 요청
-        type: GET_POST,
+        type: DELETE_POST,
         // 통신이 성공일 경우 싱행 함수
         onSuccess: (state, action) => {
-            const {data: res} = action.payload; 
+            const {data: res} = action.payload;
             return state
                 .setIn(["message", "title"],"")
                 .setIn(["message", "content"],"")

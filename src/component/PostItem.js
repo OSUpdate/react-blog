@@ -1,16 +1,23 @@
 import React, {Component} from "react";
-import {withRouter} from "react-router-dom";
+import {withRouter,Link} from "react-router-dom";
 import styles from "../App.css";
 
 class PostItem extends Component { 
     render(){
-        const {title, content, num, time, onClick} = this.props;
+        const {title, num, time, bnum,hit} = this.props;
         return(
-            <div className={styles.post} onClick={() => onClick(num)}>
-                <div className={styles.post_title}>
-                    <h3>{title}</h3>
-                    <p>{time}</p>
-                </div>
+            <div className={styles.post_content}>
+                <Link to={`/board/${bnum}/${num}`}className={styles.post} >
+                    <div className={styles.post_title}>
+                        <h3>{title}</h3>
+                    
+                    </div>
+                    <div className={styles.post_time}>
+                        
+                        <p>{time}</p>
+                        <p>조회수 {hit}</p>
+                    </div>
+                </Link>
             </div>
         );
     }
