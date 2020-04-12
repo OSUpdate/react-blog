@@ -51,7 +51,7 @@ export default applyPenders(reducer,[
         // 통신이 성공일 경우 싱행 함수
         onSuccess: (state, action) => {
             const {data: res} = action.payload; 
-            const arr = List(_.map(res.response.data,(item,index) => {
+            const arr = res.response.result?List(_.map(res.response.data,(item,index) => {
                 const {title, orderNo, update, num} = item; 
                 return Map({
                     num,
@@ -60,7 +60,7 @@ export default applyPenders(reducer,[
                     update,
                     new:item.new
                 });
-            }));
+            })):List();
             return state.set("board",arr);
         },
         // 에러가 발생한 경우 실행 함수

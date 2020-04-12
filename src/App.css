@@ -80,9 +80,10 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
   width: 100%;
 }
 
-input[type="text"]:focus, select:focus{
+input[type="text"]:focus, select:focus, textarea:focus{
   border: solid 1px #2c97de;
 }
+
 .style_button {
   color: #999;
   cursor: pointer;
@@ -222,13 +223,52 @@ nav, section, aside {
   margin: 0 0 20px 0;
 }
 .read_comment_list{
+  box-sizing: border-box;
   padding-top:20px;
+  padding-bottom: 20px;
   border-top:1px solid rgba(120,130,140,.13);
 }
 .read_comment_list ul{
+  margin:0;
   padding: 0;
 }
-
+.read_comment_list > ul > li{
+  padding-top:20px;
+  padding-bottom: 20px;
+}
+.read_comment_list > ul > li:last-child{
+  border-bottom: none !important;
+}
+.comment_title > .right_float {
+  padding-left:10px;
+  color: #999;
+  cursor: pointer;
+}
+.comment_title > .right_float:hover {
+  color:var(--main-button-color);
+}
+.write_comment_title{
+  margin-bottom:20px;
+}
+.write_comment_title > input{
+  display: inline-block;
+  width: 140px;
+  height: 52px;
+}
+.write_comment_content textarea{
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 0.9375em;
+  line-height: 1.25;
+  resize: none;
+  padding: 10px;
+}
+.write_comment_content{
+  margin-bottom: 20px;
+}
+.write_comment_title>input:last-child{
+  margin-left:20px;
+}
 .write_title{
   box-sizing: border-box;
   padding-bottom: 10px;
@@ -339,6 +379,32 @@ div.toolbar button {
 }
 .none_scroll_panel{
   box-sizing: border-box;
+}
+.comment_time{
+  margin-left:10px;
+}
+.comment_item > ul {
+  padding-left:60px;
+}
+.comment_content{
+  font-size: 0.9375em;
+  line-height: 1.5714;
+  color: #484848;
+}
+.read_comment_list > ul > li{
+  border-bottom: 1px solid rgba(120,130,140,.13);
+}
+.comment_submit > button{
+  margin:0 !important;
+}
+.comment_nick{
+  margin-right:40px;
+}
+.comment_title > span{
+  display: inline-block;
+  font-size: 0.9375em;
+  color: #484848;
+  vertical-align: middle;
 }
 .scroll_list{
   box-sizing: border-box;

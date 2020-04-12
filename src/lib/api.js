@@ -50,6 +50,37 @@ export const developInit = (token) => axios.post("/api/develop/init",{
         token
     }
 });
+export const getComment = (num) => axios.get(`/api/comment/get/${num}`);
+export const insertComment = (data) => axios.post("/api/comment/write",{
+    request:{
+        data:{
+            ...data
+        }
+    }
+});
+export const updateComment = (num,content) => axios.post("/api/comment/update",{
+    request:{
+        data:{
+            num,
+            content
+        }
+    }
+});
+export const deleteComment = (num) => axios.post("/api/comment/delete",{
+    request:{
+        data:{
+            num
+        }
+    }
+});
+export const checkPassword = (num,password) => axios.post("/api/comment/check",{
+    request:{
+        data:{
+            num,
+            password
+        }
+    }
+});
 export const getBoardPost = (bnum,page) => axios.get(`/api/board/${bnum}?page=${page}`);
 export const getPost = (num) => axios.get(`/api/post/${num}`);
 export const getReadPost = (bnum, num) => axios.get(`/api/board/${bnum}/${num}`);

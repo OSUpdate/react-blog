@@ -15,7 +15,7 @@ create table userinfo(
 create table post(
 	num INT not null AUTO_INCREMENT PRIMARY KEY,
     board_num INT not null,
-	title varchar(30) not null,
+	title varchar(70) not null,
     content varchar(2000) null,
 	board varchar(30) not null,
     hits INT unsigned not null default '0',
@@ -25,7 +25,8 @@ create table post(
 create table comments(
 	num int not null auto_increment primary key,
     comment varchar(500) not null,
-    post varchar(30) not null,
+    post varchar(70) not null,
+    parent int null,
     insert_date datetime,
     update_date datetime,
     nickname varchar(50) not null,
@@ -37,5 +38,6 @@ CREATE TABLE logged (
     PRIMARY KEY (`uid`)
 );
 insert into board (board_name,parent) values ("공지사항",null);
-insert into board (board_name,parent) values ("임시 게시bn
+insert into board (board_name,parent) values ("임시 게시
+bn
 ",null);

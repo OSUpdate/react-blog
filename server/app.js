@@ -13,7 +13,7 @@ var app = express();
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-
+app.set("etag", false);
 app.use(logger("dev"));
 app.use(cors());
 app.use(bodyParser.json({limit: 500000000}));
@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({limit: 50000000, extended: true, parameterLimit:5
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 var options = {
     dotfiles: "ignore",
     etag: false,

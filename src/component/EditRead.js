@@ -87,8 +87,41 @@ class EditRead extends Component {
                                             </div>
                                             <div className={styles.read_comment_list}>
                                                 <ul>
-                                                    <li>테스트</li>
+                                                    <li className={styles.comment_item}>
+                                                        <div className={styles.comment_title}>
+                                                            <span className={styles.comment_nick}>닉네임</span>
+                                                            <span className={styles.comment_time}>시간</span>
+                                                            <span className={styles.right_float}>버튼</span>
+                                                        </div>
+                                                        <div className={styles.comment_content}>
+                                                            <p>테스트</p>
+                                                        </div>
+                                                        <ul>
+                                                            <li className={styles.comment_item}>
+                                                                <div className={styles.comment_title}>
+                                                                    <span className={styles.comment_nick}>닉네임</span>
+                                                                    <span className={styles.comment_time}>시간</span>
+                                                                    <span className={styles.right_float}>버튼</span>
+                                                                </div>
+                                                                <div className={styles.comment_content}>
+                                                                    <p>테스트</p>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
                                                 </ul>
+                                            </div>
+                                            <div className={styles.write_comment}>
+                                                <div className={styles.write_comment_title}>
+                                                    <input type="text" ></input>
+                                                    <input type="text"></input>
+                                                </div>
+                                                <div className={styles.write_comment_content}>
+                                                    <textarea rows="4"></textarea>
+                                                </div>
+                                                <div className={styles.comment_submit}>
+                                                    <button className={cx(styles.btn_l)}>확인</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

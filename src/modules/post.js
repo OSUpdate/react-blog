@@ -151,6 +151,7 @@ export default applyPenders(reducer,[
                     checked:false
                 });
             })):List();
+            console.log("board list : ",arr);
             return state.set("post",arr).set("total",res.response.data.total);
         },
         // 에러가 발생한 경우 실행 함수
