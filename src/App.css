@@ -244,8 +244,33 @@ nav, section, aside {
   color: #999;
   cursor: pointer;
 }
+.comment_password{
+  margin-left:10px;
+}
+.comment_password> input{
+  box-sizing: border-box;
+}
+.comment_title > .comment_password_btn{
+  color: #999;
+  cursor: pointer;
+  margin-left:10px;
+}
+.comment_password_btn:hover{
+  color:var(--main-button-color);
+}
+.comment_title{
+  line-height: 40px;
+}
 .comment_title > .right_float:hover {
   color:var(--main-button-color);
+}
+.comment_content textarea{
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 0.9375em;
+  line-height: 1.25;
+  resize: none;
+  padding: 10px;
 }
 .write_comment_title{
   margin-bottom:20px;
@@ -395,7 +420,7 @@ div.toolbar button {
   border-bottom: 1px solid rgba(120,130,140,.13);
 }
 .comment_submit > button{
-  margin:0 !important;
+  margin:10px 20px 0 0 !important;
 }
 .comment_nick{
   margin-right:40px;
@@ -973,6 +998,14 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
 }
 .hover_red:hover{
   color:red;
+}
+.red_btn{
+  color:red;
+  border: 1px solid red !important;
+}
+.red_btn:hover{
+  background-color: red;
+  color:white;
 }
 .red input[type="text"],
 .red input[type="email"],

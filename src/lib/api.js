@@ -50,6 +50,13 @@ export const developInit = (token) => axios.post("/api/develop/init",{
         token
     }
 });
+export const checkComment = (data) => axios.post("/api/comment/check",{
+    request:{
+        data:{
+            ...data
+        }
+    }
+});
 export const getComment = (num) => axios.get(`/api/comment/get/${num}`);
 export const insertComment = (data) => axios.post("/api/comment/write",{
     request:{

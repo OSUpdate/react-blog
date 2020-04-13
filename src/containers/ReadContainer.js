@@ -7,7 +7,8 @@ import {withRouter,Link} from "react-router-dom";
 import { List, Map, fromJS } from "immutable";
 import styles from "../App.css";
 import classNames from "classnames";
-import {getReadPost, insertComment, updateComment, getComment} from "../lib/api";
+import CommentList from "../component/CommentList";
+import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment} from "../lib/api";
 import _ from  "partial-js";
 import {Editor, convertFromRaw, ContentState, EditorState} from "draft-js";
 const cx = classNames.bind(styles);
@@ -94,16 +95,38 @@ class ReadContainer extends Component {
     handleSubmitComment = () => {
         const {match} = this.props;
         const data = {
+            parent:null,
             comment:this.state.data.get("commentContent"),
             post:match.params.num,
             nickname:this.state.data.get("commentTitle"),
             password:this.state.data.get("commentPassword"),
+            group_no:null
         };
         _.go(
             insertComment(data),
             (res) => {
                 const {response} = res.data;
-                
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
+    handleSubmitReComment = (e,index,parentNum, groupNo) => {
+        console.log(groupNo);
+        const {match} = this.props;
+        const data = {
+            parent:parentNum,
+            comment:this.state.data.getIn(["comment",index,"commentContent"]),
+            post:match.params.num,
+            nickname:this.state.data.getIn(["comment",index,"commentTitle"]),
+            password:this.state.data.getIn(["comment",index,"commentPassword"]),
+            group_no:groupNo
+        };
+        _.go(
+            insertComment(data),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
                 return response.data;
             }
         );
@@ -113,51 +136,73 @@ class ReadContainer extends Component {
             data:this.state.data.set(e.target.name,e.target.value)
         });
     }
-    setCommentList = () => {
-        const {data} = this.state;
-        const arr = data.get("comment");
-        //console.log(arr,arr.toJS());
-        return arr.map(item=>{
-            const {num,post,comment,insert_date,update_date,nickname,parent} = item.toJS();
-            return (
-                <li className={styles.comment_item} key={num}>
-                    {!parent?
-                        <React.Fragment>
-                            <div className={styles.comment_title}>
-                                <span className={styles.comment_nick}>{nickname}</span>
-                                <span className={styles.comment_time}>{insert_date}</span>
-                                <span className={styles.right_float}>수정/삭제</span>
-                                <span className={styles.right_float}>댓글작성</span>
-                            </div>
-                            <div className={styles.comment_content}>
-                                <p>{comment}</p>
-                            </div>
-                        </React.Fragment>
-                        :
-                        <ul>
-                            <li className={styles.comment_item}>
-                                <div className={styles.comment_title}>
-                                    <span className={styles.comment_nick}>닉네임</span>
-                                    <span className={styles.comment_time}>시간</span>
-                                    <span className={styles.right_float}>버튼</span>
-                                </div>
-                                <div className={styles.comment_content}>
-                                    <p>테스트</p>
-                                </div>
-                            </li>
-                        </ul>
-                    }
-                </li>
-            );
+    handleChangeReInput = (e, num) => {
+        this.setState({
+            data:this.state.data.setIn(["comment", num,e.target.name], e.target.value)
+        });
+    } 
+    handleClickReComment = (e,num) => {
+        this.setState({
+            data:this.state.data.updateIn(["comment", num,"reply"], value=>!value)
         });
     }
-
+    handleClickModify = (e,num) => {
+        console.log(num);
+        this.setState({
+            data:this.state.data.updateIn(["comment", num,"modify"], value=>!value)
+        });
+    }
+    handleChangePassword = (e,num) => {
+        this.setState({
+            data:this.state.data.setIn(["comment", num,"passwordInput"], e.target.value)
+        });
+    }
+    handleChangeContent = (e,num) =>{
+        this.setState({
+            data:this.state.data.setIn(["comment", num,"content"], e.target.value)
+        });
+    }
+    handleSubmitPassword = (e,num, index)=>{
+        const data = {
+            password:this.state.data.getIn(["comment",num,"passwordInput"]),
+            num:index
+        };
+        _.go(
+            checkComment(data),
+            (res) => {
+                const {response} = res.data;
+                response.result?this.setState({
+                    data:this.state.data.setIn(["comment",num,"checkPassword"],true).setIn(["comment", num,"modify"],false)
+                }):null;
+                return response.data;
+            }
+        );
+    }
+    handleUpdate = (e, num, index) => {
+        _.go(
+            updateComment(index,this.state.data.getIn(["comment",num,"content"])),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
+    handleDelete = (e, index) =>{
+        _.go(
+            deleteComment(index),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
     render(){
 
-        const {handlePostClick, handleChangeInput, handleSubmitComment, setCommentList} = this;
-
-        const {num, bnum, editorState, board, time, title, hit, next, prev, commentContent, commentPassword, commentTitle} = this.state.data.toJS();
-        const commentList = this.setCommentList();
+        const {handlePostClick,handleDelete,handleUpdate,handleChangeContent,handleSubmitPassword,handleChangePassword, handleChangeInput, handleSubmitComment, handleChangeReInput, handleClickReComment, handleSubmitReComment, handleClickModify} = this;
+        const {data} = this.state;
+        const {num, bnum, editorState, board, time, title, hit, next, prev, commentContent, commentPassword, commentTitle} = data.toJS();
         return(
             <section className={styles.contents}>
                 {prev?
@@ -186,7 +231,18 @@ class ReadContainer extends Component {
                             </div>
                             <div className={styles.read_comment_list}>
                                 <ul>
-                                    {commentList}
+                                    <CommentList
+                                        data={data.get("comment")}
+                                        onChange={handleChangeReInput}
+                                        onClick={handleClickReComment}
+                                        onSubmit={handleSubmitReComment}
+                                        onModify={handleClickModify}
+                                        onPassword={handleChangePassword}
+                                        onClickPassword={handleSubmitPassword}
+                                        onContent={handleChangeContent}
+                                        onUpdate={handleUpdate}
+                                        onDelete={handleDelete}
+                                    />
                                 </ul>
                             </div>
                             <div className={styles.write_comment}>
