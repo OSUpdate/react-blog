@@ -12,13 +12,26 @@ import cx from "classnames";
 import _ from  "partial-js";
 
 class App extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+            toggle:false
+        };
+    }
     componentDidMount(){
         const {BoardActions,PostActions} = this.props;
         BoardActions.getBoard();
         PostActions.getPosts(1,1);
     }
+    handleToggleMenu = () => {
+        this.setState({
+            toggle:!this.state.toggle
+        });
+    }
     render() {
         const {board} = this.props;
+        const {toggle} = this.state;
+        const {handleToggleMenu} = this;
         const boards = _.map(board.toJS(),item=>{
             const {title,orderNo} = item;
             return (
@@ -35,11 +48,11 @@ class App extends Component {
                 </header>
                 <div className={styles.titlebar}>
 
-                    <a href="#" className={styles.toggle + " fas fa-bars"}></a>
+                    <a href="#" className={cx(styles.toggle," fas fa-bars")} onClick={handleToggleMenu}></a>
                     <a href="#">blog</a>
                 </div>
                 <section className={styles.wrapper}>
-                    <div className={styles.sidebar}>
+                    <div className={cx(styles.sidebar,toggle?styles.sidebar_toggle:"")}>
                         <div className={styles.search}>
                             <form className={"fas"}>
                                 <input type="text" name="query" id="query" placeholder="Search"/>

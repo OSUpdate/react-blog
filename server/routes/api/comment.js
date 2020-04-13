@@ -29,7 +29,6 @@ router.get("/get/:num",async function(req, res, next){
             return row;
         })(connect),
         (data)=>{
-            console.log(data);
             return _.map(data,(item,index)=>{
                 return {
                     index:index,
@@ -62,13 +61,12 @@ router.get("/get/:num",async function(req, res, next){
     return res;
 });
 router.post("/write",async function(req, res, next){
-    console.log(req.body.request.data.group_no);
     _.go(
         _.mr(req.body.request.data,await pool.getConnection(async conn => conn)),
         async (data, connect) => _.mr(
             data.group_no?
                 await connect.query(`insert into comments set insert_date = now(), seq = (select max(seq) from comments ALIAS_FOR_SUBQUERY where post = ${req.body.request.data.post} and group_no = ${req.body.request.data.group_no} order by seq desc limit 1)+1 ,?`,{...data}):
-                await connect.query(`insert into comments set insert_date = now(), seq = 1 ,group_no=(select max(group_no) from comments ALIAS_FOR_SUBQUERY where post=${data.post})+1,?`,{
+                await connect.query(`insert into comments set insert_date = now(), seq = 1 ,group_no=(select if((select max(group_no) from comments ALIAS_FOR_SUBQUERY where post=${data.post}),(select max(group_no) from comments ALIAS_FOR_SUBQUERY where post=${data.post})+1,1)),?`,{
                     parent:null,
                     comment:data.comment,
                     post:data.post,
@@ -97,7 +95,6 @@ router.post("/write",async function(req, res, next){
     return res;
 });
 router.post("/check",async function(req, res, next){
-    console.log(req.body.request.data);
     _.go(
         _.mr(req.body.request.data,await pool.getConnection(async conn => conn)),
         async (data, connect) => _.mr(await connect.query("select * from comments where num = ? and password = ?",[data.num,data.password]),connect

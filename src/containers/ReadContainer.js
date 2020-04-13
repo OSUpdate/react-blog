@@ -8,7 +8,7 @@ import { List, Map, fromJS } from "immutable";
 import styles from "../App.css";
 import classNames from "classnames";
 import CommentList from "../component/CommentList";
-import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment} from "../lib/api";
+import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment, updateHit} from "../lib/api";
 import _ from  "partial-js";
 import {Editor, convertFromRaw, ContentState, EditorState} from "draft-js";
 const cx = classNames.bind(styles);
@@ -59,6 +59,13 @@ class ReadContainer extends Component {
     }
     componentDidMount() {
         const {match} = this.props;
+        _.go(
+            updateHit(match.params.num),
+            (res)=>{
+                const {response} = res.data;
+                return response.data;
+            }
+        );
         _.go(
             getReadPost(match.params.name,match.params.num),
             (res) => {

@@ -3,7 +3,7 @@ import PostItem from "./PostItem";
 import _ from  "partial-js";
 import { List, Map } from "immutable";
 
-const PostList = ({current}) => {
+const PostList = ({current,onClick}) => {
     const postList = current.map( 
         (current,index)=>{
             const {num, insert, title, bnum,hit} = current; 
@@ -11,6 +11,7 @@ const PostList = ({current}) => {
                 <PostItem
                     key={index}
                     num={num}
+                    onClick={onClick}
                     time={insert}
                     title={title}
                     bnum={bnum}

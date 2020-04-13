@@ -4,10 +4,10 @@ import styles from "../App.css";
 
 class PostItem extends Component { 
     render(){
-        const {title, num, time, bnum,hit} = this.props;
+        const {title, num, time, bnum,hit, onClick} = this.props;
         return(
             <div className={styles.post_content}>
-                <Link to={`/board/${bnum}/${num}`}className={styles.post} >
+                <Link to={`/board/${bnum}/${num}`} className={styles.post} >
                     <div className={styles.post_title}>
                         <h3>{title}</h3>
                     

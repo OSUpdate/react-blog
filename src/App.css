@@ -81,7 +81,7 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
 }
 
 input[type="text"]:focus, select:focus, textarea:focus{
-  border: solid 1px #2c97de;
+  border: solid 1px var(--main-button-color);
 }
 
 .style_button {
@@ -303,7 +303,7 @@ nav, section, aside {
   box-sizing: border-box;
 }
 .hasFocus {
-  border: 1px solid #2c97de !important;
+  border: 1px solid var(--main-button-color) !important;
  }
  
 .write_content{
@@ -929,7 +929,7 @@ box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.08);
 .item textarea:focus,
 .item select:focus {
 outline: none;
-border-color: #2c97de;
+border-color: var(--main-button-color);
 box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
 }
 .current_page{
@@ -1107,6 +1107,16 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
   .col_md_1, .col_md_10, .col_md_11, .col_md_12, .col_md_2, .col_md_3, .col_md_4, .col_md_5, .col_md_6, .col_md_7, .col_md_8, .col_md_9 {
       float: left !important;
   }
+}
+.sidebar_toggle{
+  position: fixed;
+  top:58px !important;
+  height: 100% !important;
+  z-index: 9999 !important;
+  margin-left:0 !important;
+}
+.sidebar_toggle > .inner{
+  position: relative !important;
 }
 @media (min-width: 1280px){
   .toggle{

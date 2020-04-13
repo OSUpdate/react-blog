@@ -17,6 +17,49 @@ const pool = mysql.createPool({
 // 페이지당 게시글 수
 const per = 10;
 
+router.get("/get", async function(req, res, next){
+    const page = req.query.page?req.query.page:1;
+    const start = (page-1)*per;
+    _.go(
+        await pool.getConnection(async conn => conn),
+        async (connect) => _.mr(await connect.query("select * from post order by num desc limit ?,?",[start,per]),connect),
+        ([row],connect) => _.isEmpty(row)?(()=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: false
+                }
+            });
+            return _.stop();
+        })():(async (connect)=>{
+            return _.mr(row,await connect.query("select count(*) from post"),connect);
+        })(connect),
+        (arr,[row],connect)=> {
+            connect.release();
+            return _.mr(_.map(arr,(item,index)=>{
+                return {
+                    num:item.num,
+                    title:item.title,
+                    bnum:item.board_num,
+                    board:item.board,
+                    hit:item.hits,
+                    insert:item.insert_date,
+                    update:item.update_date
+                };
+            }),row[0]["count(*)"]);
+        },
+        (data,total) => res.json({
+            response:{
+                result: true,
+                data:{
+                    post:data,
+                    total:total
+                }
+            }
+        })
+    );
+    return res;
+});
 router.get("/:num", async function(req, res, next){
     _.go(
         _.mr(req.params.num,pool.getConnection(async conn => conn)),
@@ -66,50 +109,7 @@ router.get("/:num", async function(req, res, next){
     );
     return res;
 });
-router.get("/get", async function(req, res, next){
-    const page = req.query.page?req.query.page:1;
-    const start = (page-1)*per;
-    _.go(
-        await pool.getConnection(async conn => conn),
-        async (connect) => _.mr(await connect.query("select * from post order by num desc limit ?,10",[start]),connect),
-        ([row],connect) => !_.isEmpty(row)?
-            (async (connect)=>{
-                connect.release();
-                return _.mr(row,await connect.query("select count(*) from post"));
-            })(connect):(()=>{
-                connect.release();
-                res.json({
-                    response:{
-                        result: false
-                    }
-                });
-                return _.stop();
-            })(),
-        (arr,[row])=> {
-            return _.mr(_.map(arr,(item,index)=>{
-                return {
-                    num:item.num,
-                    title:item.title,
-                    bnum:item.board_num,
-                    board:item.board,
-                    hit:item.hits,
-                    insert:item.insert_date,
-                    update:item.update_date
-                };
-            }),row[0]["count(*)"]);
-        },
-        (data,total) => res.json({
-            response:{
-                result: true,
-                data:{
-                    post:data,
-                    total:total
-                }
-            }
-        })
-    );
-    return res;
-});
+
 router.post("/insert", async function(req, res, next){
     _.go(
         _.mr(_.pick(req.body.request.data, ["token","title","content","board_num","board"]),await pool.getConnection(async conn => conn)),
@@ -146,11 +146,30 @@ router.post("/insert", async function(req, res, next){
     return res;
 });
 
-router.post("/update", async function(req, res, next){
+router.get("/hit/:num", async function(req, res, next){
+    _.go(
+        _.mr(req.params.num,await pool.getConnection(async conn => conn)),
+        async (data, connect) => _.mr(await connect.query("update post set hits = hits+1 where num = ?",[data]),connect),
+        ([row],connect) =>_.isEmpty(row)?((connect)=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: false
+                }
+            });
+            return _.stop();
+        })(connect):(async (connect)=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: true
+                }
+            });
+        })(connect)
+    );
     return res;
 });
 router.post("/delete", async function(req, res, next){
-    console.log(req.body.request.data);
     _.go(
         _.mr(req.body.request.data.list,await pool.getConnection(async conn => conn)),
         (list,connect) =>{
@@ -160,7 +179,6 @@ router.post("/delete", async function(req, res, next){
             return _.mr(del,connect);
         },
         (result,connect) => {
-            console.log(result);
             result?(()=>{
                 res.json({
                     response:{

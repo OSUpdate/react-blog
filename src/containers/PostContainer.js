@@ -10,6 +10,7 @@ import PostList from "../component/PostList";
 import queryString from "query-string";
 import cx from "classnames";
 import { List, Map, fromJS } from "immutable";
+import {updateHit} from "../lib/api";
 import _ from "partial-js";
 
 class PostContainer extends Component {
@@ -33,18 +34,12 @@ class PostContainer extends Component {
             
         };
     }
-    handlePostClick = (title) => {
-        return (num) => {
-            const {history} = this.props;
-            history.push(`/board/${title}/${num}`);
-        };
-    }
+
     async componentDidMount(){
         const {match,PostActions,location} = this.props;
-        
+        const name = this.props.match.params.name?this.props.match.params.name:1;
         const page = queryString.parse(location.search).page?queryString.parse(location.search).page:1;
-        const initBoard = match.params.name?match.params.name:1;
-        await PostActions.getPosts(initBoard,page);
+        name !== "all"?await PostActions.getPosts(name,page):await PostActions.getAllPost(page);
         const totalPage = Math.ceil(this.props.total/this.state.data.get("per"));
         const totalBlock = Math.ceil(totalPage/this.state.data.get("block"));
         const nowBlock = Math.ceil(page/this.state.data.get("block"));
@@ -115,13 +110,11 @@ class PostContainer extends Component {
         const { data} = this.state;
         const {
             handleClick,
-            handlePostClick,
             setPage
         } = this;
 
 
         console.log(data.get("list").toJS());
-        const onClick = handlePostClick(data.title);
         const pages = setPage();
         return(
             
@@ -133,7 +126,6 @@ class PostContainer extends Component {
                     </div>
                     <PostList
                         current={data.get("list").toJS()}
-                        onClick={onClick}
                         
                     />
                     <nav className={styles.pg_wrap}>
