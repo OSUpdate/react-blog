@@ -26,12 +26,13 @@ class EditContainer extends Component {
                 menuBtn:Map({
                     post:false,
                     board:false
-                })
+                }),
+                post:List()
             })
             
         };
     }
-    componentDidMount(){
+    async componentDidMount(){
         const {BoardActions,PostActions} = this.props;
         const {history} = this.props;
         _.go(
@@ -57,6 +58,7 @@ class EditContainer extends Component {
         );
         BoardActions.getBoard();
         PostActions.getPosts(1);
+        
     }
     handlePostClick = (e,num) => {
         const {history} = this.props;
@@ -180,7 +182,9 @@ class EditContainer extends Component {
 export default connect(
     (state) => ({
         //현재 게시판 제목, 글 정보
-        
+        board:state.board.get("board"),
+        post:state.post.get("post"),
+        total:state.post.get("total")
 
     }),
     (dispatch) => ({

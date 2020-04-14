@@ -503,6 +503,7 @@ div.toolbar button {
   width: 100%;
 }
 .sidebar{
+  transition: all .5s ease-in-out;;
   background-color: var(--main-background-color);
   width: 22em;
   flex-grow: 0;
@@ -1141,7 +1142,6 @@ box-shadow: 0 0 5px rgba(44, 151, 222, 0.2);
     margin-left:-26em;
     position: fixed;
     left:0;
-    top:0;
   }
   .inner{
     position: absolute;

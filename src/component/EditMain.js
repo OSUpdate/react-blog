@@ -4,10 +4,12 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {Line} from "react-chartjs-2";
 import * as boardActions from "../modules/board";
-
-import * as accountActions from "../modules/account";
+import * as postActions from "../modules/post";
+import {getAllComment} from "../lib/api";
 import styles from "../App.css";
 import cx from "classnames";
+import _ from "partial-js";
+import { List, Map, fromJS } from "immutable";
 
 
 const data = {
@@ -39,8 +41,46 @@ const data = {
 
 
 class EditMain extends Component {
-
+    constructor(props){
+        super(props);
+        this.state={
+            data:Map({
+                post:List(),
+                comment:List()
+            })
+        };
+    }
+    async componentDidMount(){
+        const {PostActions} = this.props;
+        await PostActions.getAllPost(1);
+        this.setState({
+            data:this.state.data.set("post",this.props.post)
+        });
+        _.go(
+            getAllComment(),
+            (res) => {
+                const {response} = res.data;
+                console.log(response.data);
+                response.result?this.setState({
+                    data:this.state.data.set("comment",fromJS(response.data))
+                }):null;
+            }
+        );
+    }
+    setList = (data) =>{
+        const arr = data.map((item,index)=>{
+            const {title}=item.toJS();
+            return (
+                <li key={index} className={styles.scroll_item}>
+                    {title}
+                </li>
+            );
+        });
+        return arr;
+    }
     render(){
+        const {setList} = this;
+        //console.log(this.state.data.get("post").toJS());
         return(
             <div className={styles.container}>
                 <div className={styles.container_fluid}>
@@ -117,33 +157,7 @@ class EditMain extends Component {
                                         <div className={styles.panel_title}><h3>댓글 목록</h3></div>
                                         <div className={styles.scroll_panel}>
                                             <ul className={styles.scroll_list}>
-                                                <li className={styles.scroll_item}>
-                                                테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
+                                                {setList(this.state.data.get("comment"))}
                                             </ul>
                                         </div>
                                     </div>
@@ -155,33 +169,7 @@ class EditMain extends Component {
                                         <div className={styles.panel_title}><h3>게시글 목록</h3></div>
                                         <div className={styles.scroll_panel}>
                                             <ul className={styles.scroll_list}>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                                        테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
-                                                <li className={styles.scroll_item}>
-                                            테스트
-                                                </li>
+                                                {setList(this.state.data.get("post"))}
                                             </ul>
                                         </div>
                                     </div>
@@ -197,9 +185,13 @@ class EditMain extends Component {
 
 export default connect(
     (state) => ({
-        board:state.board.get("board")
+        board:state.board.get("board"),
+        post:state.post.get("post"),
+        total:state.post.get("total")
+
     }),
     (dispatch) => ({
-        BoardActions: bindActionCreators(boardActions, dispatch)
+        BoardActions: bindActionCreators(boardActions, dispatch),
+        PostActions: bindActionCreators(postActions, dispatch)
     })  
 )(EditMain);

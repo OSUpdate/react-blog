@@ -12,6 +12,40 @@ const pool = mysql.createPool({
     database: "blog",
     dateStrings: "date"
 });
+router.get("/get",async function(req, res, next){
+    _.go(
+        await pool.getConnection(async conn => conn),
+        async (connect) => _.mr(await connect.query("select * from comments order by IF(ISNULL(parent), num, parent) desc, seq"),connect),
+        ([row],connect) =>_.isEmpty(row)?((connect)=>{
+            connect.release();
+            res.json({
+                response:{
+                    result: false
+                }
+            });
+            return _.stop();
+        })(connect):((connect)=>{
+            connect.release();
+            return row;
+        })(connect),
+        (data)=>{
+            return _.map(data,(item,index)=>{
+                return {
+                    index:index,
+                    title:item.comment,
+                };
+            });
+        },
+        (data) => res.json({
+            response:{
+                result: true,
+                data:data
+            }
+        })
+    );
+    return res;
+});
+
 router.get("/get/:num",async function(req, res, next){
     _.go(
         await pool.getConnection(async conn => conn),

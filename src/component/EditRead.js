@@ -4,11 +4,12 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {Line} from "react-chartjs-2";
 import {Editor, convertFromRaw, ContentState, EditorState} from "draft-js";
-
+import CommentList from "../component/CommentList";
 import * as accountActions from "../modules/account";
 import styles from "../App.css";
 import cx from "classnames";
-import {getReadPost} from "../lib/api";
+import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment} from "../lib/api";
+import { List, Map, fromJS } from "immutable";
 import _ from "partial-js";
 
 class EditRead extends Component {
@@ -16,13 +17,19 @@ class EditRead extends Component {
         super(props);
         const { match } = this.props;
         this.state = {
-            num:"",
-            bnum:"",
-            board:"",
-            time:"",
-            title:"",
-            hit:"",
-            editorState:EditorState.createEmpty()
+            data:Map({
+                num:"",
+                bnum:"",
+                board:"",
+                time:"",
+                title:"",
+                hit:"",
+                editorState:EditorState.createEmpty(),
+                comment:List(),
+                commentContent:"",
+                commentTitle:"",
+                commentPassword:""
+            })
         };
     }
     componentDidMount() {
@@ -36,19 +43,141 @@ class EditRead extends Component {
             (data) =>{
                 const contentState = convertFromRaw(JSON.parse(data.content));
                 this.setState({
-                    num:data.num,
-                    bnum:data.bnum,
-                    editorState:EditorState.createWithContent(contentState),
-                    board:data.board,
-                    time:data.insert,
-                    title:data.title,
-                    hit:data.hit
+                    data:this.state.data.set("num",data.num)
+                        .set("bnum",data.bnum)
+                        .set("editorState",EditorState.createWithContent(contentState))
+                        .set("board",data.board)
+                        .set("time",data.insert)
+                        .set("title",data.title)
+                        .set("hit",data.hit)
+                        .set("next",data.next)
+                        .set("prev",data.prev)
                 });
+            }
+        );
+        _.go(
+            getComment(match.params.num),
+            (res) => {
+                const {response} = res.data;
+                console.log(response.result, response.data);
+                response.result?this.setState({
+                    data:this.state.data.set("comment",fromJS(response.data))
+                }):null;
+                return response.data;
+            }
+        );
+    }
+    handleSubmitComment = () => {
+        const {match} = this.props;
+        const data = {
+            parent:null,
+            comment:this.state.data.get("commentContent"),
+            post:match.params.num,
+            nickname:this.state.data.get("commentTitle"),
+            password:this.state.data.get("commentPassword"),
+            group_no:null
+        };
+        _.go(
+            insertComment(data),
+            (res) => {
+                const {response} = res.data;
+                console.log(response);
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
+    handleSubmitReComment = (e,index,parentNum, groupNo) => {
+        console.log(groupNo);
+        const {match} = this.props;
+        const data = {
+            parent:parentNum,
+            comment:this.state.data.getIn(["comment",index,"commentContent"]),
+            post:match.params.num,
+            nickname:this.state.data.getIn(["comment",index,"commentTitle"]),
+            password:this.state.data.getIn(["comment",index,"commentPassword"]),
+            group_no:groupNo
+        };
+        _.go(
+            insertComment(data),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
+    handleChangeInput = (e) => {
+        this.setState({
+            data:this.state.data.set(e.target.name,e.target.value)
+        });
+    }
+    handleChangeReInput = (e, num) => {
+        this.setState({
+            data:this.state.data.setIn(["comment", num,e.target.name], e.target.value)
+        });
+    } 
+    handleClickReComment = (e,num) => {
+        this.setState({
+            data:this.state.data.updateIn(["comment", num,"reply"], value=>!value)
+        });
+    }
+    handleClickModify = (e,num) => {
+        console.log(num);
+        this.setState({
+            data:this.state.data.updateIn(["comment", num,"modify"], value=>!value)
+        });
+    }
+    handleChangePassword = (e,num) => {
+        this.setState({
+            data:this.state.data.setIn(["comment", num,"passwordInput"], e.target.value)
+        });
+    }
+    handleChangeContent = (e,num) =>{
+        this.setState({
+            data:this.state.data.setIn(["comment", num,"content"], e.target.value)
+        });
+    }
+    handleSubmitPassword = (e,num, index)=>{
+        const data = {
+            password:this.state.data.getIn(["comment",num,"passwordInput"]),
+            num:index
+        };
+        _.go(
+            checkComment(data),
+            (res) => {
+                const {response} = res.data;
+                response.result?this.setState({
+                    data:this.state.data.setIn(["comment",num,"checkPassword"],true).setIn(["comment", num,"modify"],false)
+                }):null;
+                return response.data;
+            }
+        );
+    }
+    handleUpdate = (e, num, index) => {
+        _.go(
+            updateComment(index,this.state.data.getIn(["comment",num,"content"])),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
+                return response.data;
+            }
+        );
+    }
+    handleDelete = (e, index) =>{
+        _.go(
+            deleteComment(index),
+            (res) => {
+                const {response} = res.data;
+                response.result?window.location.reload():null;
+                return response.data;
             }
         );
     }
     render(){
-        const {num, bnum, editorState, board, time, title, hit} = this.state;
+        const {data} = this.state;
+        const {handleDelete,handleUpdate,handleChangeContent,handleSubmitPassword,handleChangePassword, handleChangeInput, handleSubmitComment, handleChangeReInput, handleClickReComment, handleSubmitReComment, handleClickModify} = this;
+        const {num, bnum, editorState, board, time, title, hit, next, prev, commentContent, commentPassword, commentTitle} = data.toJS();
         return(
             <div className={styles.container}>
                 <div className={styles.area}>
@@ -87,40 +216,30 @@ class EditRead extends Component {
                                             </div>
                                             <div className={styles.read_comment_list}>
                                                 <ul>
-                                                    <li className={styles.comment_item}>
-                                                        <div className={styles.comment_title}>
-                                                            <span className={styles.comment_nick}>닉네임</span>
-                                                            <span className={styles.comment_time}>시간</span>
-                                                            <span className={styles.right_float}>버튼</span>
-                                                        </div>
-                                                        <div className={styles.comment_content}>
-                                                            <p>테스트</p>
-                                                        </div>
-                                                        <ul>
-                                                            <li className={styles.comment_item}>
-                                                                <div className={styles.comment_title}>
-                                                                    <span className={styles.comment_nick}>닉네임</span>
-                                                                    <span className={styles.comment_time}>시간</span>
-                                                                    <span className={styles.right_float}>버튼</span>
-                                                                </div>
-                                                                <div className={styles.comment_content}>
-                                                                    <p>테스트</p>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </li>
+                                                    <CommentList
+                                                        data={data.get("comment")}
+                                                        onChange={handleChangeReInput}
+                                                        onClick={handleClickReComment}
+                                                        onSubmit={handleSubmitReComment}
+                                                        onModify={handleClickModify}
+                                                        onPassword={handleChangePassword}
+                                                        onClickPassword={handleSubmitPassword}
+                                                        onContent={handleChangeContent}
+                                                        onUpdate={handleUpdate}
+                                                        onDelete={handleDelete}
+                                                    />
                                                 </ul>
                                             </div>
                                             <div className={styles.write_comment}>
                                                 <div className={styles.write_comment_title}>
-                                                    <input type="text" ></input>
-                                                    <input type="text"></input>
+                                                    <input type="text" name="commentTitle" onChange={handleChangeInput} value={commentTitle} placeholder="닉네임"></input>
+                                                    <input type="text" name="commentPassword" onChange={handleChangeInput} value={commentPassword} placeholder="비밀번호"></input>
                                                 </div>
                                                 <div className={styles.write_comment_content}>
-                                                    <textarea rows="4"></textarea>
+                                                    <textarea rows="4" name="commentContent" onChange={handleChangeInput} value={commentContent} placeholder="내용"></textarea>
                                                 </div>
                                                 <div className={styles.comment_submit}>
-                                                    <button className={cx(styles.btn_l)}>확인</button>
+                                                    <button className={cx(styles.btn_l)} onClick={handleSubmitComment}>확인</button>
                                                 </div>
                                             </div>
                                         </div>

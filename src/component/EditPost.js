@@ -32,40 +32,7 @@ class EditPost extends Component {
                 activeDelete:false,
                 currentBoard:1
             })
-            
         };
-        /*
-        this.state = {
-            activeDelete:false,
-            list:[
-                {
-                    title:"테스트",
-                    time:"날짜",
-                    checked:false
-                },
-                {
-                    title:"테스트1",
-                    time:"날짜",
-                    checked:false
-                },
-                {
-                    title:"테스트2",
-                    time:"날짜",
-                    checked:false
-                },
-                {
-                    title:"테스트3",
-                    time:"날짜",
-                    checked:false
-                },
-                {
-                    title:"테스트4",
-                    time:"날짜",
-                    checked:false
-                }
-            ]
-        };
-        */
     }
     
     async componentDidUpdate(prevProps, prevState){
@@ -99,10 +66,10 @@ class EditPost extends Component {
         return;
     }
     async componentDidMount(){
-        const {match,PostActions,location} = this.props;
+        const {PostActions,location} = this.props;
         const page = queryString.parse(location.search).page?queryString.parse(location.search).page:1;
-        const initBoard = match.params.bname?match.params.bname:1;
-        await PostActions.getPosts(initBoard,page);
+        const name = this.props.match.params.bname?this.props.match.params.bname:1;
+        await PostActions.getPosts(name,page);
         const totalPage = Math.ceil(this.props.total/this.state.data.get("per"));
         const totalBlock = Math.ceil(totalPage/this.state.data.get("block"));
         const nowBlock = Math.ceil(page/this.state.data.get("block"));
@@ -119,20 +86,6 @@ class EditPost extends Component {
                 .set("next",next)
                 .set("prev",prev)
         });
-        /*
-        _.go(
-            getBoardPost(this.props.match.bname?this.props.match.bname:1),
-            (res) => {
-                const {response} = res.data;
-                return response.data;
-            },
-            _.map(item=>Map(item)),
-            (list)=>this.setState({
-                boards:List(list)
-            }),
-            _.catch(error=>{console.log(error);})
-        );
-        */
     }
     handleActiveButton = (list) => {
         return _.every(list,item => item.checked === false)?false:true;
