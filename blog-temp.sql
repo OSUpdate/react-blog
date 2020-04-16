@@ -30,12 +30,19 @@ create table comments(
     insert_date datetime,
     update_date datetime,
     nickname varchar(50) not null,
+    group_no int not null,
     password varchar(30) null
 );
 CREATE TABLE logged (
     `token` VARCHAR(100) NULL,
     `uid` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`uid`)
+);
+create table visit(
+	num int not null auto_increment primary key,
+	ip varchar(20) not null,
+    visit_date datetime,
+    page varchar(300) not null
 );
 insert into board (board_name,parent) values ("공지사항",null);
 insert into board (board_name,parent) values ("임시 게시

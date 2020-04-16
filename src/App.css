@@ -173,6 +173,9 @@ nav, section, aside {
   margin-bottom: 1.8em;
   
 }
+.title > a{
+  color:#333;
+}
 .side_title{
   position: relative;
 }

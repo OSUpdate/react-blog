@@ -29,6 +29,7 @@ export const allCheckToggle = createAction(ALL_CHECK_TOGGLE);
 const initialState = Map({
     //메뉴창 게시판 리스트
     post:List(),
+    error:false,
     total:0,
     //현재 게시판 페이징 처리 변수
     current:1,
@@ -104,9 +105,7 @@ export default applyPenders(reducer,[
         // 통신이 성공일 경우 싱행 함수
         onSuccess: (state, action) => {
             const {data: res} = action.payload;
-            console.log(res);
             const arr = res.response.result?List(_.map(res.response.data.post,(item,index)=>{
-                console.log(item,"item");
                 return Map({
                     ...item,
                     checked:false
@@ -151,16 +150,14 @@ export default applyPenders(reducer,[
                     checked:false
                 });
             })):List();
-            console.log("board list : ",arr);
-            return state.set("post",arr).set("total",res.response.data.total);
+            const error = res.response.result?false:true;
+            return state.set("post",arr).set("total",res.response.data.total).set("error",error);
         },
         // 에러가 발생한 경우 실행 함수
         onError: (state, action) => {
             const {data: res, status: status} = action.payload.response;
             return state
-                .setIn(["message", "title"],"")
-                .setIn(["message", "content"],"")
-                .setIn(["message", "modal"], true);
+                .set("error",true);
         }
     },
     {

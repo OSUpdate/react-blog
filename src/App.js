@@ -5,6 +5,7 @@ import {Link} from "react-router-dom";
 import * as postActions from "./modules/post";
 import * as boardActions from "./modules/board";
 import styles from "./App.css";
+import {setVisit} from "./lib/api";
 import PostContainer from "./containers/PostContainer";
 import ReadContainer from "./containers/ReadContainer";
 import { withRouter, Switch, Route } from "react-router-dom";
@@ -20,6 +21,14 @@ class App extends Component {
     }
     componentDidMount(){
         const {BoardActions,PostActions} = this.props;
+        _.go(
+            setVisit(window.location.href),
+            (res)=>{
+                const{response}=res.data;
+                console.log(response);
+                return response;
+            }
+        );
         BoardActions.getBoard();
         PostActions.getPosts(1,1);
     }

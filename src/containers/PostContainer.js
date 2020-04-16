@@ -10,7 +10,7 @@ import PostList from "../component/PostList";
 import queryString from "query-string";
 import cx from "classnames";
 import { List, Map, fromJS } from "immutable";
-import {updateHit} from "../lib/api";
+import {updateHit, setVisit} from "../lib/api";
 import _ from "partial-js";
 
 class PostContainer extends Component {
@@ -36,6 +36,14 @@ class PostContainer extends Component {
     }
 
     async componentDidMount(){
+        _.go(
+            setVisit(window.location.href),
+            (res)=>{
+                const{response}=res.data;
+                console.log(response);
+                return response;
+            }
+        );
         const {match,PostActions,location} = this.props;
         const name = this.props.match.params.name?this.props.match.params.name:1;
         const page = queryString.parse(location.search).page?queryString.parse(location.search).page:1;
@@ -45,6 +53,8 @@ class PostContainer extends Component {
         const nowBlock = Math.ceil(page/this.state.data.get("block"));
         const next = nowBlock < totalBlock?true:false;
         const prev = nowBlock > 1?true:false;
+        console.log(this.props.error);
+        this.props.error?history.push("/404"):null;
         this.setState({
             data:this.state.data.set("currentBoard",this.props.match.params.name)
                 .set("list",this.props.post)
@@ -58,10 +68,16 @@ class PostContainer extends Component {
         });
     }
     async componentDidUpdate(prevProps, prevState){
-        const {PostActions} = this.props;
+        const {PostActions, history} = this.props;
         if((prevProps.match.params.name !== this.props.match.params.name) || 
             queryString.parse(this.props.location.search).page !== queryString.parse(prevProps.location.search).page){
-
+            _.go(
+                setVisit(window.location.href),
+                (res)=>{
+                    const{response}=res.data;
+                    return response;
+                }
+            );
             const page = queryString.parse(this.props.location.search).page?queryString.parse(location.search).page:1;
             const name = this.props.match.params.name?this.props.match.params.name:1;
             name !== "all"?await PostActions.getPosts(name,page):await PostActions.getAllPost(page);
@@ -70,7 +86,8 @@ class PostContainer extends Component {
             const nowBlock = Math.ceil(page/this.state.data.get("block"));
             const next = nowBlock < totalBlock?true:false;
             const prev = nowBlock > 1?true:false;
-
+            console.log(this.props.error);
+            this.props.error?history.push("/404"):null;
             this.setState({
                 data:this.state.data.set("currentBoard",name)
                     .set("list",this.props.post)
@@ -104,7 +121,6 @@ class PostContainer extends Component {
 
     handleClick = (e)=>{
         e.preventDefault();
-        console.log(e.target);
     }
     render(){
         const { data} = this.state;
@@ -113,8 +129,6 @@ class PostContainer extends Component {
             setPage
         } = this;
 
-
-        console.log(data.get("list").toJS());
         const pages = setPage();
         return(
             
@@ -122,7 +136,9 @@ class PostContainer extends Component {
                 <div className={styles.contents_inner}>
             
                     <div className={styles.title}>
-                        <h2>{this.props.match.params.name === "all"?"전체 게시글":data.getIn(["list",0,"board"])}</h2>
+                        <Link to={this.props.match.params.name === "all"?"/board/all?page=1":`/board/${data.getIn(["list",0,"bnum"])}?page=1`}>
+                            <h2>{this.props.match.params.name === "all"?"전체 게시글":data.getIn(["list",0,"board"])}</h2>
+                        </Link>
                     </div>
                     <PostList
                         current={data.get("list").toJS()}
@@ -142,7 +158,8 @@ export default connect(
     (state) => ({
         board:state.board.get("board"),
         post:state.post.get("post"),
-        total:state.post.get("total")
+        total:state.post.get("total"),
+        error:state.post.get("error")
     }),
     (dispatch) => ({
         PostActions: bindActionCreators(postActions, dispatch),

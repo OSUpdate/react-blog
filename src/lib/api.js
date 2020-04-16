@@ -10,6 +10,15 @@ export const getBoards = () => axios.get("/api/board/get");
 export const getAllPost = (page) => axios.get(`/api/post/get?page=${page}`);
 export const updateHit = (num) => axios.get(`/api/post/hit/${num}`);
 export const getAllComment = () => axios.get("/api/comment/get");
+export const getVisitChart = () => axios.get("/api/visit/get/chart");
+export const getVisitList = () => axios.get("/api/visit/get/list");
+export const setVisit = (page) => axios.post("/api/visit/set",{
+    request:{
+        data:{
+            page
+        }
+    }
+});
 export const insertBoard = (token, title) => axios.post("/api/board/insert",{
     request:{
         data:{

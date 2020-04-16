@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter} from "react-router-dom";
-import {signin, signup, checkLogin} from "../lib/api";
+import {signin, signup, checkLogin, setVisit} from "../lib/api";
 import * as accountActions from "../modules/account";
 import SignInList from "../component/SignInList";
 import SignUpList from "../component/SignUpList";
@@ -99,6 +99,14 @@ class SignContainer extends Component {
                 console.log(error);
                 localStorage.removeItem("userInfo");
             })
+        );
+        _.go(
+            setVisit(window.location.href),
+            (res)=>{
+                const{response}=res.data;
+                console.log(response);
+                return response;
+            }
         );
     }
     handleSignUpInput = (e, num) => {

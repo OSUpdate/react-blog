@@ -115,13 +115,14 @@ class EditWrite extends Component {
         return (e) => this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, e.target.name));
     }
     handleSubmit = () => {
-        const {match} = this.props;
+        const {match,history} = this.props;
         const {select, title, editorState} = this.state;
         const content = editorState.getCurrentContent();
         this.state.mode?_.go(
             updatePost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
             (res) => {
                 const {response} = res.data;
+                response.result?history.push(`/edit/${this.props.match.params.token}/board/${select.get("num")}`):null;
                 return response.data;
             },
             _.catch(error=>{console.log(error);})
@@ -130,6 +131,7 @@ class EditWrite extends Component {
                 insertPost(match.params.token,select.get("title"),select.get("num"),title,JSON.stringify(convertToRaw(content))),
                 (res) => {
                     const {response} = res.data;
+                    response.result?history.push(`/edit/${this.props.match.params.token}/board/${select.get("num")}`):null;
                     return response.data;
                 },
                 _.catch(error=>{console.log(error);})

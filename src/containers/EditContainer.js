@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {bindActionCreators} from "redux";
 import {withRouter, Switch, Route, Link} from "react-router-dom";
 import {Line} from "react-chartjs-2";
-import {checkLogin, logout} from "../lib/api";
+import {checkLogin, logout, setVisit} from "../lib/api";
 import cx from "classnames";
 import * as boardActions from "../modules/board";
 import * as postActions from "../modules/post";
@@ -16,6 +16,7 @@ import EditWrite from "../component/EditWrite";
 import EditBoard from "../component/EditBoard";
 import { List, Map, fromJS} from "immutable";
 import _ from  "partial-js";
+import { set } from "immutable";
 
 class EditContainer extends Component {
     constructor(props){
@@ -55,6 +56,14 @@ class EditContainer extends Component {
                 console.log(error);
                 localStorage.removeItem("userInfo");
             })
+        );
+        _.go(
+            setVisit(window.location.href),
+            (res)=>{
+                const{response}=res.data;
+                console.log(response);
+                return response;
+            }
         );
         BoardActions.getBoard();
         PostActions.getPosts(1);

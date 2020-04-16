@@ -1,9 +1,10 @@
-var express = require("express");
-var comment = require("./comment");
-var post = require("./post");
-var board = require("./board");
-var account = require("./account");
-var router = express.Router();
+const express = require("express");
+const comment = require("./comment");
+const post = require("./post");
+const board = require("./board");
+const account = require("./account");
+const visit = require("./visit");
+const router = express.Router();
 
 // /api/post 경로 라우터 연결
 router.use("/post", post);
@@ -17,4 +18,5 @@ router.use("/comment", comment);
 // /api/comment 경로 라우터 연결
 router.use("/account", account);
 
+router.use("/visit", visit);
 module.exports = router;

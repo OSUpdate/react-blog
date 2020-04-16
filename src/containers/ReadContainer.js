@@ -8,7 +8,7 @@ import { List, Map, fromJS } from "immutable";
 import styles from "../App.css";
 import classNames from "classnames";
 import CommentList from "../component/CommentList";
-import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment, updateHit} from "../lib/api";
+import {getReadPost, insertComment, updateComment, getComment, checkComment, deleteComment, updateHit, setVisit} from "../lib/api";
 import _ from  "partial-js";
 import {Editor, convertFromRaw, ContentState, EditorState} from "draft-js";
 const cx = classNames.bind(styles);
@@ -38,6 +38,7 @@ class ReadContainer extends Component {
                 getReadPost(this.props.match.params.name,this.props.match.params.num),
                 (res) => {
                     const {response} = res.data;
+                    response.result?null:history.push("/404");
                     return response.data;
                 },
                 (data) =>{
@@ -58,7 +59,7 @@ class ReadContainer extends Component {
         }
     }
     componentDidMount() {
-        const {match} = this.props;
+        const {match,history} = this.props;
         _.go(
             updateHit(match.params.num),
             (res)=>{
@@ -70,6 +71,7 @@ class ReadContainer extends Component {
             getReadPost(match.params.name,match.params.num),
             (res) => {
                 const {response} = res.data;
+                response.result?null:history.push("/404");
                 return response.data;
             },
             (data) =>{
@@ -96,6 +98,14 @@ class ReadContainer extends Component {
                     data:this.state.data.set("comment",fromJS(response.data))
                 }):null;
                 return response.data;
+            }
+        );
+        _.go(
+            setVisit(window.location.href),
+            (res)=>{
+                const{response}=res.data;
+                console.log(response);
+                return response;
             }
         );
     }
@@ -221,7 +231,9 @@ class ReadContainer extends Component {
                     :""}
                 <div className={styles.contents_inner}>
                     <div className={styles.title}>
-                        <h3>{board}</h3>
+                        <Link to={`/board/${bnum}`}>
+                            <h3>{board}</h3>
+                        </Link>
                     </div>
                     <div className={styles.content_card}>
                         <div className={styles.card_title}>

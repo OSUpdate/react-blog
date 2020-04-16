@@ -49,7 +49,7 @@ class EditPost extends Component {
             const nowBlock = Math.ceil(page/this.state.data.get("block"));
             const next = nowBlock < totalBlock?true:false;
             const prev = nowBlock > 1?true:false;
-
+            console.log(this.props.post);
             this.setState({
                 data:this.state.data.set("currentBoard",name)
                     .set("list",this.props.post)
@@ -75,6 +75,7 @@ class EditPost extends Component {
         const nowBlock = Math.ceil(page/this.state.data.get("block"));
         const next = nowBlock < totalBlock?true:false;
         const prev = nowBlock > 1?true:false;
+        console.log(this.props.post);
         this.setState({
             data:this.state.data.set("currentBoard",this.props.match.params.bname)
                 .set("list",this.props.post)
