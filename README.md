@@ -16,6 +16,5 @@ cd server
 npm run dev
 ~~~
 
-## ㅎ
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your projectㅅ
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 스크린샷
+![main](./image/main.png)
