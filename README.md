@@ -16,5 +16,18 @@ cd server
 npm run dev
 ~~~
 
+## 구현내역
+* 사용자 게시글 읽기
+* 게시판 구현
+* 댓글 및 대댓글 작성, 수정, 삭제
+* 로그인 및 회원가입
+* 관리자 페이지 게시글 작성, 수정, 삭제
+* 게시판 추가, 수정, 삭제
+
 ## 스크린샷
 ![main](./image/main.png)
+![user-read](./image/user-read.png)
+![write](./image/write.png)
+![read](./image/read.png)
+![edit](./image/edit.png)
+![write](./image/write.png)
